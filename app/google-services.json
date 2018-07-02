@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "1088371921595",
+    "firebase_url": "https://prathamquizzing.firebaseio.com",
+    "project_id": "prathamquizzing",
+    "storage_bucket": "prathamquizzing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088371921595:android:72f4a06d60ef33b8",
+        "android_client_info": {
+          "package_name": "com.example.vaibhav.prathamquizzingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088371921595-jo4tvovscita4s2211gffvpk4at6msk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vaibhav.prathamquizzingapp",
+            "certificate_hash": "29bf06405a8d4b0ec7f3a4cb95f5bf990f764f23"
+          }
+        },
+        {
+          "client_id": "1088371921595-uudjuctgu8n6ton2lo51abqrdepa9t0d.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1088371921595-uudjuctgu8n6ton2lo51abqrdepa9t0d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmqEO_V5Ur-ja20SDrFLwSL99S5nDAa38"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088371921595-uudjuctgu8n6ton2lo51abqrdepa9t0d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

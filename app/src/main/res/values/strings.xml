@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PrathamQuizzingApp</string>
+    <string name="title_activity_try">TryActivity</string>
+    <string-array name="allClasses">
+        <item>"03"</item>
+        <item>"04"</item>
+        <item>"05"</item>
+        <item>"06"</item>
+        <item>"07"</item>
+        <item>"08"</item>
+        <item>"09"</item>
+        <item>"02"</item>
+        <item>"01"</item>
+    </string-array>
+    <string-array name="Subjects">
+        <item>"Maths"</item>
+        <item>"English"</item>
+        <item>"Science"</item>
+    </string-array>
+</resources>

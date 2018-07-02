@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="200dp"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/etDialogNumber"
+        android:inputType="text"
+        android:hint="Title"/>
+
+    <Button
+        android:id="@+id/btnDialogNumber"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Done"/>
+
+</LinearLayout>
