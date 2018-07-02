@@ -1,5 +1,6 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * Created by vaibhav on 22/6/18.
  */
 
-public class PerformanceStudent extends AppCompatActivity {
+public class PerformanceStudent extends Activity {
     private static final String TAG = "PerformanceStudent";
 
     private ListView listView;

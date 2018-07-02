@@ -1,12 +1,12 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +27,7 @@ import java.io.IOException;
  * Created by vaibhav on 1/6/18.
  */
 
-public class AddStudents extends AppCompatActivity {
+public class AddStudents extends Activity {
     private static final String TAG = "AddStudents";
 
     private EditText name, age;
@@ -43,7 +43,7 @@ public class AddStudents extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.students_data_screen);
+        setContentView(R.layout.activity_students_data);
         Log.d(TAG, "onCreate: created");
 
         final String school    = myapp.getSchool();

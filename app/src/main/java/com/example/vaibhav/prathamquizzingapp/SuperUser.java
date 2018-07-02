@@ -1,12 +1,12 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Created by vaibhav on 11/6/18.
  */
 
-public class SuperUser extends AppCompatActivity {
+public class SuperUser extends Activity {
     private static final String TAG = "SuperUser";
 
     private Button btnAddQuiz,btnDelQuiz,btnEditQuiz,btnViewStudents,btnViewTeachers,btnUploadStatus;
@@ -36,7 +36,7 @@ public class SuperUser extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.super_user);
+        setContentView(R.layout.activity_super_user);
         Log.d(TAG, "onCreate: ");
 
         btnAddQuiz      = (Button)findViewById(R.id.btnAddQuiz);
@@ -206,6 +206,7 @@ public class SuperUser extends AppCompatActivity {
                 Log.d(TAG, "onClick: " + curClass);
                 String[] subjects = getResources().getStringArray(R.array.Subjects);
                 selectSubject(subjects, type);
+                dialogInterface.dismiss();
             }
         });
 
@@ -247,7 +248,7 @@ public class SuperUser extends AppCompatActivity {
     private void enterNumber() {
 
         Log.d(TAG, "enterNumber: ");
-        Dialog dialog = new Dialog(SuperUser.this);
+        final Dialog dialog = new Dialog(SuperUser.this);
         dialog.setContentView(R.layout.dialog_edit_number);
 
         final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
@@ -291,6 +292,7 @@ public class SuperUser extends AppCompatActivity {
                 });
 
                 enterText(numStudents);
+                dialog.dismiss();
             }
         });
 
@@ -301,7 +303,7 @@ public class SuperUser extends AppCompatActivity {
     private void enterText(final int numStudents) {
         Log.d(TAG, "enterText: ");
         
-        Dialog dialog = new Dialog(SuperUser.this);
+        final Dialog dialog = new Dialog(SuperUser.this);
         dialog.setContentView(R.layout.dialog_text);
 
         final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
@@ -315,7 +317,8 @@ public class SuperUser extends AppCompatActivity {
             public void onClick(View view) {
                 String name = et.getText().toString().trim();
                 myapp.setQuizTitle(name);
-                
+
+                dialog.dismiss();
                 Intent intent = new Intent(SuperUser.this,AddQuestions.class);
                 intent.putExtra("number",numStudents);
                 startActivity(intent);
@@ -351,6 +354,7 @@ public class SuperUser extends AppCompatActivity {
                     }
 
                     selectSubject(subjects, dataSnapshot.child(curClass), type);
+                    dialogInterface.dismiss();
                 }
             }
         });
@@ -399,6 +403,7 @@ public class SuperUser extends AppCompatActivity {
                     }
 
                     selectTopic(titles,topics,type);
+                    dialogInterface.dismiss();
                 }
             }
         });
@@ -428,6 +433,7 @@ public class SuperUser extends AppCompatActivity {
                 String curSection = array[i];
                 myapp.setSec(curSection);
                 Log.d(TAG, "onClick: "+curSection);
+                dialogInterface.dismiss();
             }
         });
 
@@ -456,11 +462,13 @@ public class SuperUser extends AppCompatActivity {
                 myapp.setQuizTitle(curTitle);
 
                 if (type.equals("edit")) {
+                    dialogInterface.dismiss();
                     Intent intent = new Intent(SuperUser.this, EditQuiz.class);
                     startActivity(intent);
                 }
                 if (type.equals("delete")){
                     deleteQuiz(curTopic);
+                    dialogInterface.dismiss();
                 }
 
             }

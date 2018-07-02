@@ -1,5 +1,6 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,8 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -42,7 +40,7 @@ import java.util.Date;
  * Created by vaibhav on 2/6/18.
  */
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends Activity {
 
     private static final String TAG = "HomePage";
 
@@ -57,7 +55,7 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_page);
+        setContentView(R.layout.activity_home_page);
         Log.d(TAG, "onCreate: Created");
 
         btnUpload      = (Button) findViewById(R.id.btnUploadH);
@@ -197,6 +195,7 @@ public class HomePage extends AppCompatActivity {
                     startActivity(intent);
                 }
                 else selectSection(type);
+                dialogInterface.dismiss();
             }
         });
 
@@ -231,6 +230,7 @@ public class HomePage extends AppCompatActivity {
                     selectSubject();
                 }
                 else enterNumStudents();
+                dialogInterface.dismiss();
             }
         });
 
@@ -262,6 +262,7 @@ public class HomePage extends AppCompatActivity {
                 myapp.setSubject(curSubject);
                 Log.d(TAG, "onClick: "+curSubject);
                 selectTopic(curSubject);
+                dialogInterface.dismiss();
             }
         });
 
@@ -279,16 +280,16 @@ public class HomePage extends AppCompatActivity {
     private void selectTopic(String subject) {
 
         final String cls = myapp.getCls();
-        File myDir = new File(pathQ+cls+"/"+subject);
+        File myDir = new File(pathQ + cls + "/" + subject);
         if (!myDir.exists()){
             toastMessage("No Quizzes. Download the Quizzes first!");
-            Log.d(TAG, "onCreate: "+pathQ+cls);
+            Log.d(TAG, "onCreate: "+ pathQ + cls + "/" + subject);
             return;
         }
         File file = new File(myDir,"topics.txt");
-        final String[] topics = readData(file);
+        final String[] titles = readData(file);
 
-        int count = topics.length;
+        int count = titles.length;
         if (count==0) {
             toastMessage("Error! :(");
             return;
@@ -297,13 +298,14 @@ public class HomePage extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Topic");
         builder.setCancelable(false);
-        builder.setSingleChoiceItems(topics, -1,new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(titles, -1,new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String curTitle = topics[i];
+                String curTitle = titles[i];
                 myapp.setQuizTitle(curTitle);
                 dialogInterface.dismiss();
                 Log.d(TAG, "onClick: "+curTitle);
+                dialogInterface.dismiss();
                 Intent intent = new Intent(HomePage.this,SelectName.class);
                 startActivity(intent);
             }
@@ -323,7 +325,7 @@ public class HomePage extends AppCompatActivity {
     private void enterNumStudents() {
 
         Log.d(TAG, "enterNumStudents: ");
-        Dialog dialog = new Dialog(HomePage.this);
+        final Dialog dialog = new Dialog(HomePage.this);
         dialog.setContentView(R.layout.dialog_edit_number);
 
         final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
@@ -345,6 +347,7 @@ public class HomePage extends AppCompatActivity {
                     return;
                 }
 
+                dialog.dismiss();
                 Intent intent = new Intent(HomePage.this,AddStudents.class);
                 intent.putExtra("number",numStudents);
                 startActivity(intent);

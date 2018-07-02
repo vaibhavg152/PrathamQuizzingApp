@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/Mytheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +29,7 @@
         <activity android:name=".HomePage" />
         <activity android:name=".SelectName" />
         <activity android:name=".RegisterEmail" />
-        <activity android:name=".Quiz" />
+        <activity android:name=".QuizActivity" />
         <activity android:name=".AddQuestions" />
         <activity android:name=".showScore" />
         <activity android:name=".DownloadQuizzes" />

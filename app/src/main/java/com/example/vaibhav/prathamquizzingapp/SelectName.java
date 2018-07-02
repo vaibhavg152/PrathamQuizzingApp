@@ -1,10 +1,10 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Created by vaibhav on 4/6/18.
  */
 
-public class SelectName extends AppCompatActivity {
+public class SelectName extends Activity {
     private static final String TAG = "SelectName";
 
     private ListView listNames;
@@ -36,7 +36,7 @@ public class SelectName extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.select_name_screen);
+        setContentView(R.layout.activity_select_name);
         Log.d(TAG, "onCreate: created");
 
 
@@ -80,7 +80,7 @@ public class SelectName extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                     childName = namesarray.get(i);
-                    Intent intent = new Intent(SelectName.this, Quiz.class);
+                    Intent intent = new Intent(SelectName.this, QuizActivity.class);
                     intent.putExtra("section", sec);
                     intent.putExtra("title", title);
                     intent.putExtra("student", childName);

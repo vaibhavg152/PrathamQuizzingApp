@@ -1,12 +1,12 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -20,22 +20,18 @@ import android.widget.Toast;
 import com.example.vaibhav.prathamquizzingapp.classes.myapp;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by vaibhav on 5/6/18.
  */
 
-public class AddQuestions extends AppCompatActivity {
+public class AddQuestions extends Activity {
     private static final String TAG = "AddQuestions";
 
     private EditText etQues,etA,etB,etC,etD,etAns;
@@ -52,7 +48,7 @@ public class AddQuestions extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_ques_screen);
+        setContentView(R.layout.activity_add_ques);
         Log.d(TAG, "onCreate: created");
 
         //initialize android stuff

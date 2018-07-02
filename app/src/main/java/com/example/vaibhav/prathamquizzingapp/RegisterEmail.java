@@ -1,5 +1,6 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,18 +20,18 @@ import com.google.firebase.auth.FirebaseUser;
  * Created by vaibhav on 4/6/18.
  */
 
-public class RegisterEmail extends AppCompatActivity {
+public class RegisterEmail extends Activity {
     private static final String TAG = "RegisterEmail";
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText etEmail,etPassword;
-    private Button btnDone,btngo;
+    private Button btnDone;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.resgister_email);
+        setContentView(R.layout.activity_login);
         Log.d(TAG, "onCreate: created");
 
         mAuth = FirebaseAuth.getInstance();
@@ -41,22 +42,21 @@ public class RegisterEmail extends AppCompatActivity {
                 if(user!=null) {
                     Log.d(TAG, "onAuthStateChanged: signed in :" + user.getUid());
                     myapp.setUserId(user.getUid());
-                    Toast.makeText(RegisterEmail.this,"Successfully signed in as "+user.getEmail(),Toast.LENGTH_SHORT).show();
+                    toastMessage("Successfully signed in as "+user.getEmail());
                     Intent intent = new Intent(RegisterEmail.this,Register.class);
                     startActivity(intent);
                 }
                 else {
-                    Toast.makeText(RegisterEmail.this,"Signed out. :)",Toast.LENGTH_SHORT).show();
+                    toastMessage("Signed out. :)");
                     Log.d(TAG, "onAuthStateChanged: signed out");
                 }
             }
         };
         mAuth.addAuthStateListener(mAuthListener);
 
-        etEmail =(EditText) findViewById(R.id.etEmailR);
-        etPassword = (EditText) findViewById(R.id.etpwdR);
-        btnDone = (Button) findViewById(R.id.btnDoneRE);
-        btngo = (Button) findViewById(R.id.btnGoooo);
+        etEmail     = (EditText) findViewById(R.id.etEmail);
+        etPassword  = (EditText) findViewById(R.id.etPwd);
+        btnDone     = (Button)   findViewById(R.id.btnDoneLogin);
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,21 +65,20 @@ public class RegisterEmail extends AppCompatActivity {
                 String Email = etEmail.getText().toString();
                 String pwd = etPassword.getText().toString();
                 if (Email.length()<1||pwd.length()<6){
-                    Toast.makeText(RegisterEmail.this,"Email or password can't be empty",Toast.LENGTH_SHORT).show();
+                    toastMessage("Email or password can't be empty");
                     return;
                 }
 
                 mAuth.createUserWithEmailAndPassword(Email,pwd);
+                toastMessage("Please Wait. It might take a few seconds :)");
                 Log.d(TAG, "onClick: signed in ");
                     }
         });
 
-        btngo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    }
 
-            }
-        });
+    private void toastMessage(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
     }
 
 }

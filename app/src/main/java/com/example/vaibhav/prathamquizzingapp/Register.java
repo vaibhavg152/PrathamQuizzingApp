@@ -1,11 +1,11 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.vaibhav.prathamquizzingapp.classes.Sections;
 import com.example.vaibhav.prathamquizzingapp.classes.myapp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -27,7 +26,7 @@ import java.util.ArrayList;
  * Created by vaibhav on 1/6/18.
  */
 
-public class Register extends AppCompatActivity{
+public class Register extends Activity {
     private static final String TAG = "Register";
 
     private DatabaseReference reference;
@@ -43,7 +42,7 @@ public class Register extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register);
+        setContentView(R.layout.activity_register);
         Log.d(TAG, "onCreate: created");
 
         final String userId = myapp.getUserId();

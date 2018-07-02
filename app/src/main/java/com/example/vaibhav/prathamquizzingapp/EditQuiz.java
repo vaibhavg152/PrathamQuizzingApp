@@ -1,5 +1,6 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class EditQuiz extends AppCompatActivity {
+public class EditQuiz extends Activity {
 
     private static final String TAG = "EditQuiz";
     private ListView listView;

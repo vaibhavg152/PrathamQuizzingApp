@@ -1,11 +1,11 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,7 +27,7 @@ import java.io.IOException;
  * Created by vaibhav on 7/6/18.
  */
 
-public class DownloadQuizzes extends AppCompatActivity {
+public class DownloadQuizzes extends Activity {
     private static final String TAG = "DownloadQuizzes";
 
     private DatabaseReference databaseReference;
@@ -36,7 +36,7 @@ public class DownloadQuizzes extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.download_images);
+        setContentView(R.layout.activity_download);
         Log.d(TAG, "onCreate: created");
 
         final String cls = myapp.getCls();

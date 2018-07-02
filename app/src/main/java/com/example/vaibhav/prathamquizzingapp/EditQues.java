@@ -1,12 +1,12 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -34,7 +34,7 @@ import com.google.firebase.storage.UploadTask;
  * Created by vaibhav on 12/6/18.
  */
 
-public class EditQues extends AppCompatActivity {
+public class EditQues extends Activity {
     private static final String TAG = "EditQues";
 
     private EditText etQues,etA,etB,etC,etD,etAns;
@@ -51,7 +51,7 @@ public class EditQues extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_ques_screen);
+        setContentView(R.layout.activity_add_ques);
         Log.d(TAG, "onCreate: created");
 
         //initialize android stuff

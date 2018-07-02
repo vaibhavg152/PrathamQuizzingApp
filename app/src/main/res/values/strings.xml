@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">PrathamQuizzingApp</string>
     <string name="title_activity_try">TryActivity</string>
+
+    <string name="pathQuizzes"></string>
+    <string name="pathUser"></string>
+
     <string-array name="allClasses">
         <item>"03"</item>
         <item>"04"</item>
@@ -12,9 +16,27 @@
         <item>"02"</item>
         <item>"01"</item>
     </string-array>
+
+    <string-array name="CorrectAnsToasts">
+        <item>"Well Done :)"</item>
+        <item>"Great job :)"</item>
+        <item>"Keep going :)"</item>
+        <item>"Keep it up! :)"</item>
+        <item>"Smart! :)"</item>
+        <item>"Correct Answer :)"</item>
+    </string-array>
+
+    <string-array name="IncorrectAnsToasts">
+        <item>"Try again :("</item>
+        <item>"Nice try :("</item>
+        <item>"Dont be sad :("</item>
+        <item>"Missed this time :("</item>
+    </string-array>
+
     <string-array name="Subjects">
         <item>"Maths"</item>
         <item>"English"</item>
         <item>"Science"</item>
     </string-array>
+
 </resources>

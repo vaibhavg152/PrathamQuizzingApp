@@ -1,15 +1,16 @@
 package com.example.vaibhav.prathamquizzingapp;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.vaibhav.prathamquizzingapp.classes.myapp;
@@ -25,11 +26,12 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements Serializable{
+public class MainActivity extends Activity implements Serializable{
 
     private static final String TAG = "MainActivity";
 
     private Button login,btnAdmin,practice;
+    private ImageView imageLogo;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseAuth mAuth;
     private final static String pathQ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
@@ -42,9 +44,12 @@ public class MainActivity extends AppCompatActivity implements Serializable{
 
         Log.d(TAG, "onCreate: Created");
 
-        login=(Button) findViewById(R.id.btnlogin);
-        btnAdmin=(Button)findViewById(R.id.btnAdmin);
-        practice=(Button)findViewById(R.id.btnPractice);
+        login     = (Button)    findViewById(R.id.btnlogin);
+        btnAdmin  = (Button)    findViewById(R.id.btnAdmin);
+        practice  = (Button)    findViewById(R.id.btnPractice);
+        imageLogo = (ImageView) findViewById(R.id.imageViewmain);
+
+        imageLogo.setImageResource(R.drawable.logo);
 
         mAuth=FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -57,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements Serializable{
                     myapp.setUserId(user.getUid());
                     Intent intent = new Intent(MainActivity.this,SuperUser.class);
                     intent.putExtra("user",user.getUid());
-                    startActivity(intent);
+                    //startActivity(intent);
                 }
                 else {
                     Toast.makeText(MainActivity.this,"Signed out. :)",Toast.LENGTH_SHORT).show();
@@ -109,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements Serializable{
 
         String[] allClasses = getResources().getStringArray(R.array.allClasses);
         ArrayList<String> temp = new ArrayList<>();
-        File myDir,file;
-        String finalPath,data;
+        File myDir;
+        String finalPath;
 
         for (String s:allClasses) {
             finalPath = pathQ +s;
@@ -134,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements Serializable{
                 myapp.setCls(curClass);
                 Log.d(TAG, "onClick: "+curClass);
                 selectSubject();
+                dialogInterface.dismiss();
             }
         });
 
@@ -156,8 +162,8 @@ public class MainActivity extends AppCompatActivity implements Serializable{
         final String[] subjects = getResources().getStringArray(R.array.Subjects);
 
         ArrayList<String> temp = new ArrayList<>();
-        File myDir,file;
-        String finalPath,data;
+        File myDir;
+        String finalPath;
 
         for (String s:subjects) {
             finalPath = pathQ +cls+"/"+s;
@@ -180,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements Serializable{
                 myapp.setSubject(curSubject);
                 Log.d(TAG, "onClick: "+curSubject);
                 selectTopic(curSubject);
+                dialogInterface.dismiss();
             }
         });
 
@@ -220,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements Serializable{
                 String curTitle = topics[i];
                 myapp.setQuizTitle(curTitle);
 
-                Intent intent = new Intent(MainActivity.this,Quiz.class);
+                dialogInterface.dismiss();
+                Intent intent = new Intent(MainActivity.this,QuizActivity.class);
                 intent.putExtra("signedIn",false);
                 intent.putExtra("childId","");
                 startActivity(intent);
