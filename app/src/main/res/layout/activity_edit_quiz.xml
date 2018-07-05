@@ -15,6 +15,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
         android:text="TextView"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/btnblahplz"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

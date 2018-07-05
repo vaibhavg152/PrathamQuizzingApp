@@ -1,6 +1,7 @@
 package com.example.vaibhav.prathamquizzingapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.ListView;
@@ -28,10 +29,16 @@ public class PerformanceStudent extends Activity {
         listView = (ListView) findViewById(R.id.listScoresstud);
         scores = new ArrayList<>();
 
-        scores.add(new Score("plant","45.8","68.9"));
-        scores.add(new Score("animal","65.7","78.6"));
-        scores.add(new Score("insect","56.4","54.3"));
+        Intent comingIntent = getIntent();
+        String[] finScores = comingIntent.getStringArrayExtra("scores");
+        String[] avgScores = comingIntent.getStringArrayExtra("avgScores");
+        String[] topics    = comingIntent.getStringArrayExtra("topics");
+        String   name      = comingIntent.getStringExtra     ("name");
 
+        int count = topics.length;
+        for (int i=0; i<count; i++) {
+            scores.add(new Score(topics[i], finScores[i], avgScores[i]));
+        }
         PersonListAdapter adapter = new PersonListAdapter(this,R.layout.listview_scores,scores);
         listView.setAdapter(adapter);
     }

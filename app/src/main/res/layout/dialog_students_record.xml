@@ -4,43 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="350dp"
+    android:layout_gravity="center"
+    android:gravity="center"
     android:background="@drawable/bgborder"
     tools:layout_editor_absoluteY="81dp">
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Enter School ID and class"
         android:textColor="#000"
-        android:layout_weight="10"
-        android:textSize="18sp" />
+        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/etSchoolidSR"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:ems="10"
-        android:layout_weight="10"
         android:hint="School ID (must have 3 digits)"
         android:inputType="number" />
 
     <EditText
         android:id="@+id/etClassSR"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:ems="10"
-        android:layout_weight="10"
         android:hint="Class (must have 2 digits)"
         android:inputType="number" />
 
     <EditText
         android:id="@+id/etSectionSR"
-        android:layout_weight="10"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Section"
         android:inputType="text" />
@@ -49,7 +47,7 @@
         android:id="@+id/btnDoneStudRecord"
         style="@android:style/Widget.Button.Inset"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fontFamily="casual"
         android:text="Done"
         android:textColor="#000"

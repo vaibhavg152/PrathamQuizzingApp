@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static android.view.View.VISIBLE;
+
 /**
  * Created by vaibhav on 4/6/18.
  */
@@ -130,13 +132,14 @@ public class QuizActivity extends Activity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    audioPlayer.prepare();
-                } catch (Exception e) {
-                    btnPlay.setEnabled(false);
-                    toastMessage("Audio can't be played. :(");
-                    e.printStackTrace();
-                }
+                if (hasAudio[q_no-1])
+                    try {
+                        audioPlayer.prepare();
+                    } catch (Exception e) {
+                        btnPlay.setEnabled(false);
+                        toastMessage("Audio can't be played. :(");
+                        e.printStackTrace();
+                    }
             }
         });
     }
@@ -318,7 +321,7 @@ public class QuizActivity extends Activity {
         try {
             FileInputStream fis = new FileInputStream(file);
             audioPlayer.setDataSource(fis.getFD());
-            btnPlay.setEnabled(true);
+            btnPlay.setVisibility(VISIBLE);
 
             fis.close();
         } catch (Exception e) {
@@ -346,7 +349,7 @@ public class QuizActivity extends Activity {
         }
     }
 
-    private void choseAns(){
+    private void choseAns() {
 
         Log.d(TAG, "choseAns: ");
 
@@ -403,10 +406,11 @@ public class QuizActivity extends Activity {
         mediaPlayer.stop();
 
         q_no++;
-        btnD.setVisibility(View.VISIBLE);
-        btnC.setVisibility(View.VISIBLE);
-        btnB.setVisibility(View.VISIBLE);
-        btnA.setVisibility(View.VISIBLE);
+        btnPlay.setVisibility(View.INVISIBLE);
+        btnD.setVisibility(VISIBLE);
+        btnC.setVisibility(VISIBLE);
+        btnB.setVisibility(VISIBLE);
+        btnA.setVisibility(VISIBLE);
 
         if (q_no>numQues) FinishQuiz();
         else setQuestions();

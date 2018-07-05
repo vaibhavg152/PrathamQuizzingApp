@@ -45,6 +45,7 @@
             android:layout_weight="1"
             android:drawableLeft="@drawable/icons_autograph"
             android:hint="Full Name"
+            android:inputType="textPersonName"
             android:textColor="#000" />
 
         <EditText

@@ -48,7 +48,7 @@ public class HomePage extends Activity {
     private DatabaseReference databaseReference;
     private Button btnUpload, btnDownload, btnStartQuiz, btnSignOut, btnComplete,btnViewScores;
     private Boolean isConnected;
-    private String userId,school;
+    private String userId,school,teacherName;
     private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/",
                          pathQ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/Quizzes/";
 
@@ -145,6 +145,7 @@ public class HomePage extends Activity {
         }
 
         school = details[0];
+        teacherName = details[1];
         int count = details.length-2;
         String[] clas = new String[count];
 
@@ -511,6 +512,9 @@ public class HomePage extends Activity {
 
     private void uploadTeacherScore(DatabaseReference tempRef,String cls, String subject) {
 
+        databaseReference.child("users").child("Name").setValue(teacherName);
+        databaseReference.child("users").child("School").setValue(school);
+
         Log.d(TAG, "uploadTeacherScore: ");
         File myDir = new File(pathQ + cls + "/" + subject);
         File file = new File(myDir, "/topics.txt");
@@ -569,7 +573,7 @@ public class HomePage extends Activity {
                         double avgScore = 100 * totalCorrect[0] / totalAttempts[0];
                         tempRef.child(s).child("Correct").setValue(totalCorrect[0]);
                         tempRef.child(s).child("Attempts").setValue(totalAttempts[0]);
-                        tempRef.child(s).child("averageScore").setValue(avgScore);
+                        tempRef.child(s).child("averageScore").setValue(""+avgScore);
                     }
                 }
             }

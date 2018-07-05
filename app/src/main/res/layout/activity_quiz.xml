@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_quiz">
+    android:background="@drawable/bg_quiz_2">
 
     <TextView
         android:id="@+id/txtScore"
@@ -13,7 +13,7 @@
         android:layout_marginTop="8dp"
         android:gravity="end"
         android:text="Score: 0"
-        android:textSize="14sp"
+        android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,108 +22,114 @@
         android:id="@+id/Question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="24dp"
+        android:drawableLeft="@drawable/icons_circledq"
         android:gravity="center"
         android:text="Question"
         android:textAlignment="center"
         android:textColor="#000"
         android:textSize="25sp"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtScore" />
 
     <ImageView
         android:id="@+id/imageQuiz"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/LLOptions"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Question" />
 
-    <Button
-        android:id="@+id/btnA"
+    <LinearLayout
+        android:id="@+id/LLOptions"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginRight="70dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="16dp"
-        android:minWidth="100dp"
-        android:text="A."
+        android:layout_height="225dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageQuiz" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/btnB"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginTop="8dp"
-        android:minWidth="100dp"
-        android:text="B."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnA" />
+        <Button
+            android:id="@+id/btnA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/layout_button"
+            android:drawableLeft="@drawable/icons_circleda"
+            android:minHeight="50dp"
+            android:text="A."
+            android:textColor="#FFFFFF" />
 
-    <Button
-        android:id="@+id/btnC"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="8dp"
-        android:minWidth="100dp"
-        android:padding="0dp"
-        android:text="C."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnB" />
+        <Button
+            android:id="@+id/btnB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/layout_button"
+            android:drawableLeft="@drawable/icons_circledb"
+            android:minHeight="50dp"
+            android:text="B."
+            android:textColor="#FFFFFF" />
 
-    <Button
-        android:id="@+id/btnD"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginRight="70dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="8dp"
-        android:minWidth="100dp"
-        android:text="D."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnC" />
+        <Button
+            android:id="@+id/btnC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/layout_button"
+            android:drawableLeft="@drawable/icons_circledc"
+            android:minHeight="50dp"
+            android:text="C."
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/layout_button"
+            android:drawableLeft="@drawable/icons_circledd"
+            android:minHeight="50dp"
+            android:text="D."
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnPlayAudio"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/ic_action_name"
+        android:background="@drawable/layout_button"
+        android:drawableLeft="@drawable/icons_music"
         android:enabled="false"
-        android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/btnA"
+        android:text="Play"
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toTopOf="@+id/LLOptions"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageQuiz"
-        app:layout_constraintTop_toBottomOf="@+id/Question" />
+        app:layout_constraintTop_toBottomOf="@+id/Question"
+        app:layout_constraintVertical_bias="0.949" />
 
 </android.support.constraint.ConstraintLayout>

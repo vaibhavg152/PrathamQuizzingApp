@@ -7,89 +7,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="80dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:drawableLeft="@drawable/icons_add"
+            android:paddingLeft="15dp"
+            android:id="@+id/btnAddQuiz"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:text="Create a Quiz"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnEditQuiz"
+            android:drawableLeft="@drawable/icons_write"
+            android:paddingLeft="15dp"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:text="Edit a Quiz"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnDeleteQuiz"
+            android:drawableLeft="@drawable/icons_cancel"
+            android:paddingLeft="15dp"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:text="Delete a Quiz"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnStudProgress"
+            android:drawableLeft="@drawable/icons_male"
+            android:paddingLeft="15dp"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="casual"
+            android:text="View Students Progress"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnTeacherProgress"
+            android:drawableLeft="@drawable/icons_classroom"
+            android:paddingLeft="15dp"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:text="View Teachers Progress"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnStatus"
+            android:drawableLeft="@drawable/icons_details"
+            android:paddingLeft="15dp"
+            style="@android:style/Widget.Button.Inset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:text="Upload Status"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
     <Button
-        android:id="@+id/btnAddQuiz"
+        android:id="@+id/btnSignOutSU"
+        android:drawableLeft="@drawable/icons8_logout"
+        android:drawablePadding="8dp"
         style="@android:style/Widget.Button.Inset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginBottom="48dp"
         android:fontFamily="casual"
-        android:text="Create a Quiz"
-        android:textColor="#000"
+        android:text="Sign Out"
         android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.251"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnEditQuiz"
-        style="@android:style/Widget.Button.Inset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="casual"
-        android:text="Edit a Quiz"
-        android:textColor="#000"
-        android:textSize="18sp"
-        app:layout_constraintHorizontal_bias="0.138"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddQuiz" />
-
-    <Button
-        android:id="@+id/btnDeleteQuiz"
-        style="@android:style/Widget.Button.Inset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="casual"
-        android:text="Delete a Quiz"
-        android:textColor="#000"
-        android:textSize="18sp"
-        app:layout_constraintHorizontal_bias="0.798"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnEditQuiz" />
-
-    <Button
-        android:id="@+id/btnStudProgress"
-        style="@android:style/Widget.Button.Inset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="casual"
-        android:text="View Students Progress"
-        android:textColor="#000"
-        android:textSize="18sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDeleteQuiz" />
-
-    <Button
-        android:id="@+id/btnTeacherProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="casual"
-        style="@android:style/Widget.Button.Inset"
-        android:textColor="#000"
-        android:textSize="18sp"
-        android:text="View Teachers Progress"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStudProgress" />
-
-    <Button
-        android:id="@+id/btnStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Upload Status"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnTeacherProgress" />
+        app:layout_constraintLeft_toLeftOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

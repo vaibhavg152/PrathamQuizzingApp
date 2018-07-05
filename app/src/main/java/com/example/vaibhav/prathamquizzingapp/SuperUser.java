@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +33,8 @@ import java.util.ArrayList;
 public class SuperUser extends Activity {
     private static final String TAG = "SuperUser";
 
-    private Button btnAddQuiz,btnDelQuiz,btnEditQuiz,btnViewStudents,btnViewTeachers,btnUploadStatus;
+    private FirebaseAuth mAuth;
+    private Button btnAddQuiz,btnDelQuiz,btnEditQuiz,btnViewStudents,btnViewTeachers,btnUploadStatus,btnSignOut;
     private DatabaseReference reference;
     private String topicNo;
     private boolean isConnected;
@@ -49,13 +51,14 @@ public class SuperUser extends Activity {
         btnViewStudents = (Button)findViewById(R.id.btnStudProgress);
         btnViewTeachers = (Button)findViewById(R.id.btnTeacherProgress);
         btnUploadStatus = (Button)findViewById(R.id.btnStatus);
+        btnSignOut      = (Button)findViewById(R.id.btnSignOutSU);
 
         ConnectivityManager manager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         isConnected = (networkInfo!=null && networkInfo.isConnectedOrConnecting());
 
         reference = FirebaseDatabase.getInstance().getReference().child("Quizzes");
-
+        mAuth = FirebaseAuth.getInstance();
 
         btnAddQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +82,16 @@ public class SuperUser extends Activity {
             @Override
             public void onClick(View view) {
                 viewStudents();
+            }
+        });
+
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mAuth.signOut();
+                Intent intent= new Intent(SuperUser.this,MainActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -274,7 +287,7 @@ public class SuperUser extends Activity {
         final Dialog dialog = new Dialog(SuperUser.this);
         dialog.setContentView(R.layout.dialog_text);
 
-        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
+        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogText);
         Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
         et.setEnabled(true);
         et.setHint("Title of the new Quiz");
