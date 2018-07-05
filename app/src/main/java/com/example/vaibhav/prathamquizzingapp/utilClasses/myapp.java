@@ -1,16 +1,9 @@
-package com.example.vaibhav.prathamquizzingapp.classes;
+package com.example.vaibhav.prathamquizzingapp.utilClasses;
 
 import android.app.Application;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -22,18 +15,8 @@ public class myapp extends Application {
     private static final String TAG = "myapp";
     private static String userId,school,Sec,Cls,Topic,quizTitle,Subject;
     private static int numClasses;
-    private static ArrayList<String> Clses = new ArrayList<>();
+    private static String[] Clses;
     private static ArrayList<Sections> allSections = new ArrayList<>();
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-    }
-
-    public static ArrayList<String> getClses() {
-        return Clses;
-    }
 
     public static String getTopic() {
         return Topic;
@@ -60,20 +43,14 @@ public class myapp extends Application {
     }
 
     public static String[] getClsArray(){
-        String[] result = new String[numClasses];
-        for (int i=0;i<numClasses;i++){
-            result[i] = Clses.get(i);
-        }
-        return result;
+        Log.d(TAG, "getClsArray: "+Clses.length);
+        return Clses;
     }
 
-    public static void setClses(ArrayList<String> clses) {
+    public static void setClses(String[] clses) {
         Clses = clses;
-        numClasses = clses.size();
-    }
-
-    public static int getNumClasses(){
-        return numClasses;
+        numClasses = clses.length;
+        Log.d(TAG, "setClses: "+numClasses);
     }
 
     public static void clearSections(){

@@ -33,7 +33,7 @@ public class UploadStatus extends Activity {
 
         listView  = (ListView) findViewById(R.id.listviewNames);
         arrayList = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance().getReference().child("Pratham").child("Offline").child("Update Report");
+        reference = FirebaseDatabase.getInstance().getReference().child("Update Report");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override

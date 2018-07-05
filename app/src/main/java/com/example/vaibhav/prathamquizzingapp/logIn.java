@@ -1,17 +1,24 @@
 package com.example.vaibhav.prathamquizzingapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -27,6 +34,7 @@ public class logIn extends Activity {
     private EditText etEmail, etPassword;
     private FirebaseAuth.AuthStateListener authStateListener;
     private Button btnEnter,btnRegister;
+    private TextView forgot;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,10 +42,12 @@ public class logIn extends Activity {
         setContentView(R.layout.activity_login);
         Log.d(TAG, "onCreate: reached");
 
+        forgot      = (TextView) findViewById(R.id.txtForgotPassword);
         etEmail     = (EditText) findViewById(R.id.etEmail);
         etPassword  = (EditText) findViewById(R.id.etPwd);
-        btnEnter = (Button)   findViewById(R.id.btnDoneLogin);
+        btnEnter    = (Button)   findViewById(R.id.btnDoneLogin);
         btnRegister = (Button)   findViewById(R.id.btnRegister);
+        btnRegister.setVisibility(View.VISIBLE);
 
         final Boolean admin = getIntent().getBooleanExtra("user",false);
         if (admin) btnRegister.setVisibility(View.INVISIBLE);
@@ -76,6 +86,13 @@ public class logIn extends Activity {
 
         auth.addAuthStateListener(authStateListener);
 
+        forgot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetPassword();
+            }
+        });
+
         btnEnter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -88,7 +105,14 @@ public class logIn extends Activity {
                         return;
                     }
 
-                    auth.signInWithEmailAndPassword(Email,pwd);
+                    auth.signInWithEmailAndPassword(Email,pwd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()){
+                                toastMessage("Couldn't sign in :(. Check your email and password");
+                            }
+                        }
+                    });
                     toastMessage("Logging in might take a few seconds");
                 }
         });
@@ -105,6 +129,37 @@ public class logIn extends Activity {
 
     }
 
+    private void resetPassword() {
+
+        final Dialog dialog = new Dialog(logIn.this);
+        dialog.setContentView(R.layout.dialog_text);
+
+        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
+        Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
+        et.setEnabled(true);
+        et.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        btnDone.setEnabled(true);
+
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = et.getText().toString().trim();
+                auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful())
+                            toastMessage("Email sent!");
+                        else
+                            toastMessage("could not send the email. :(");
+                    }
+                });
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+    }
 
     private void toastMessage(String s) {
         Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();

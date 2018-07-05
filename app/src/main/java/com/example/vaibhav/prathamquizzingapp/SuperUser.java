@@ -2,8 +2,11 @@ package com.example.vaibhav.prathamquizzingapp;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -13,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +35,7 @@ public class SuperUser extends Activity {
     private Button btnAddQuiz,btnDelQuiz,btnEditQuiz,btnViewStudents,btnViewTeachers,btnUploadStatus;
     private DatabaseReference reference;
     private String topicNo;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,66 +50,35 @@ public class SuperUser extends Activity {
         btnViewTeachers = (Button)findViewById(R.id.btnTeacherProgress);
         btnUploadStatus = (Button)findViewById(R.id.btnStatus);
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Pratham").child("Offline").child("Quizzes");
+        ConnectivityManager manager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        isConnected = (networkInfo!=null && networkInfo.isConnectedOrConnecting());
+
+        reference = FirebaseDatabase.getInstance().getReference().child("Quizzes");
+
 
         btnAddQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: ");
-
-                String[] array = getResources().getStringArray(R.array.allClasses);
-                selectClass("Add",array);
-
+                selectClass();
             }
         });
-
         btnDelQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String[] clses = new String[(int) dataSnapshot.getChildrenCount()];
-                        int pos=0;
-                        for (DataSnapshot cls:dataSnapshot.getChildren()){
-                            clses[pos] = cls.getKey();
-                            pos++;
-                        }
-                        selectClass("delete", clses,dataSnapshot);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+                select("delete");
             }
         });
-
         btnEditQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String[] clses = new String[(int) dataSnapshot.getChildrenCount()];
-                        int pos=0;
-                        for (DataSnapshot cls:dataSnapshot.getChildren()){
-                            clses[pos] = cls.getKey();
-                            pos++;
-                        }
-                        selectClass("edit", clses,dataSnapshot);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+                select("edit");
+            }
+        });
+        btnViewStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewStudents();
             }
         });
 
@@ -118,13 +91,6 @@ public class SuperUser extends Activity {
             }
         });
 
-        btnViewStudents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewStudents();
-            }
-        });
-
         btnUploadStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,6 +98,28 @@ public class SuperUser extends Activity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void select(final String type) {
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String[] clses = new String[(int) dataSnapshot.getChildrenCount()];
+                int pos=0;
+                for (DataSnapshot cls:dataSnapshot.getChildren()){
+                    clses[pos] = cls.getKey();
+                    pos++;
+                }
+                selectClass(type, clses,dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void viewStudents() {
@@ -159,41 +147,22 @@ public class SuperUser extends Activity {
                     return;
                 }
 
-                reference.getParent().child("Schools").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (!(dataSnapshot.hasChild(sch))){
-                            toastMessage("No data found for school "+sch);
-                            return;
-                        }
-                        if (!dataSnapshot.child(sch).hasChild(cls)){
-                            toastMessage("No data found for "+cls+" for school "+sch);
-                            return;
-                        }
-                        if (!dataSnapshot.child(sch).child(cls).hasChild(sec)){
-                            toastMessage("No data found for "+ cls +" "+ sec +"in school "+sch);
-                        }
+                myapp.setSchool(sch);
+                myapp.setCls(cls);
+                myapp.setSec(sec);
 
-                        myapp.setSchool(sch);
-                        myapp.setCls(cls);
-                        myapp.setSec(sec);
-                        Intent intent = new Intent(SuperUser.this,showStudents.class);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+                Intent intent = new Intent(SuperUser.this,showStudents.class);
+                startActivity(intent);
             }
         });
 
         dialog.show();
     }
 
-    private void selectClass(final String type, final String[] array) {
+    private void selectClass() {
         Log.d(TAG, "selectClass: ");
+
+        final String[] array = getResources().getStringArray(R.array.allClasses);
         final AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Class");
 
@@ -205,7 +174,7 @@ public class SuperUser extends Activity {
 
                 Log.d(TAG, "onClick: " + curClass);
                 String[] subjects = getResources().getStringArray(R.array.Subjects);
-                selectSubject(subjects, type);
+                selectSubject(subjects);
                 dialogInterface.dismiss();
             }
         });
@@ -222,7 +191,7 @@ public class SuperUser extends Activity {
 
     }
 
-    private void selectSubject(final String[] subjects, final String type) {
+    private void selectSubject(final String[] subjects) {
         Log.d(TAG, "selectSubject: ");
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
@@ -235,8 +204,7 @@ public class SuperUser extends Activity {
                 myapp.setSubject(curSubject);
 
                 Log.d(TAG, "onClick: " + curSubject);
-                if (type.equals("Add"))
-                    enterNumber();
+                enterNumber();
                 dialogInterface.dismiss();
             }
         });
@@ -309,7 +277,7 @@ public class SuperUser extends Activity {
         final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
         Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
         et.setEnabled(true);
-        et.setHint("Number of Questions");
+        et.setHint("Title of the new Quiz");
         btnDone.setEnabled(true);
 
         btnDone.setOnClickListener(new View.OnClickListener() {
@@ -349,6 +317,7 @@ public class SuperUser extends Activity {
                     int pos = 0;
                     for (DataSnapshot sub : dataSnapshot.child(curClass).getChildren()) {
                         subjects[pos] = sub.getKey();
+
                         Log.d(TAG, "onClick: "+subjects[pos]);
                         pos++;
                     }
@@ -405,6 +374,8 @@ public class SuperUser extends Activity {
                     selectTopic(titles,topics,type);
                     dialogInterface.dismiss();
                 }
+
+
             }
         });
 
@@ -420,33 +391,33 @@ public class SuperUser extends Activity {
 
     }
 
-    private void selectSection(final String cls, final String type) {
-
-        Log.d(TAG, "selectSection: ");
-        final String[] array = myapp.getSections(cls);
-        AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
-        builder.setTitle("Select a Class");
-        builder.setCancelable(false);
-        builder.setSingleChoiceItems(array, -1,new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String curSection = array[i];
-                myapp.setSec(curSection);
-                Log.d(TAG, "onClick: "+curSection);
-                dialogInterface.dismiss();
-            }
-        });
-
-        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+//    private void selectSection(final String cls, final String type) {
+//
+//        Log.d(TAG, "selectSection: ");
+//        final String[] array = myapp.getSections(cls);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
+//        builder.setTitle("Select a Class");
+//        builder.setCancelable(false);
+//        builder.setSingleChoiceItems(array, -1,new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                String curSection = array[i];
+//                myapp.setSec(curSection);
+//                Log.d(TAG, "onClick: "+curSection);
+//                dialogInterface.dismiss();
+//            }
+//        });
+//
+//        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                dialogInterface.dismiss();
+//            }
+//        });
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+//    }
 
     private void selectTopic(final String[] titles, final String[] topics, final String type) {
 
@@ -502,13 +473,13 @@ public class SuperUser extends Activity {
 
     }
 
-    private void toastMessage(String s) {
-        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
-    }
-
     private void deleteQuiz(String curTopic) {
         Log.d(TAG, "deleteQuiz: ");
         reference.child(myapp.getCls()).child(myapp.getSubject()).child(curTopic).removeValue();
     }
-    
+
+    private void toastMessage(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+    }
+
 }

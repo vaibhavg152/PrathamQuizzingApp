@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -30,12 +30,11 @@ public class MainActivity extends Activity implements Serializable{
 
     private static final String TAG = "MainActivity";
 
-    private Button login,btnAdmin,practice;
+    private Button login,btnAdmin,practice,btnDownload;
     private ImageView imageLogo;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseAuth mAuth;
-    private final static String pathQ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-            + "/Pratham/Quizzes/";
+    private final String pathQ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/Quizzes/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,7 @@ public class MainActivity extends Activity implements Serializable{
 
         login     = (Button)    findViewById(R.id.btnlogin);
         btnAdmin  = (Button)    findViewById(R.id.btnAdmin);
+        btnDownload = (Button)  findViewById(R.id.btnDownloadMain);
         practice  = (Button)    findViewById(R.id.btnPractice);
         imageLogo = (ImageView) findViewById(R.id.imageViewmain);
 
@@ -58,14 +58,14 @@ public class MainActivity extends Activity implements Serializable{
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user!=null) {
                     Log.d(TAG, "onAuthStateChanged: signed in :" + user.getUid());
-                    Toast.makeText(MainActivity.this,"Successfully signed in as "+user.getEmail(),Toast.LENGTH_SHORT).show();
+                    toastMessage("Successfully signed in as "+user.getEmail());
                     myapp.setUserId(user.getUid());
                     Intent intent = new Intent(MainActivity.this,SuperUser.class);
                     intent.putExtra("user",user.getUid());
-                    //startActivity(intent);
+                    startActivity(intent);
                 }
                 else {
-                    Toast.makeText(MainActivity.this,"Signed out. :)",Toast.LENGTH_SHORT).show();
+                    toastMessage("Signed out. :)");
                     Log.d(TAG, "onAuthStateChanged: signed out");
                     myapp.setUserId("null");
                 }
@@ -103,31 +103,48 @@ public class MainActivity extends Activity implements Serializable{
         practice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: going to the quiz selection screen");
-                selectClass();
+                selectClass("");
+            }
+        });
+
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectClass("download");
             }
         });
 
     }
 
-    private void selectClass() {
+    private void selectClass(final String type) {
 
         String[] allClasses = getResources().getStringArray(R.array.allClasses);
         ArrayList<String> temp = new ArrayList<>();
         File myDir;
         String finalPath;
+        final String[] array;
 
-        for (String s:allClasses) {
-            finalPath = pathQ +s;
-            myDir = new File(finalPath);
-            if (myDir.exists()) temp.add(s);
+        if (!type.equals("download")) {
+            for (String s : allClasses) {
+                finalPath = pathQ + s;
+                myDir = new File(finalPath);
+                Log.d(TAG, "selectClass: "+finalPath);
+                if (myDir.exists()) temp.add(s);
+            }
+            array = new String[temp.size()];
+            for (int i = 0; i < array.length; i++) {
+                array[i] = temp.get(i);
+            }
         }
-        final String[] array = new String[temp.size()];
-        for (int i =0 ;i<array.length; i++){
-            array[i] = temp.get(i);
-        }
+        else
+            array = allClasses;
 
         Log.d(TAG, "selectClass: "+array.length);
+
+        if (array.length==0){
+            toastMessage("No Quizzes downloaded");
+            return;
+        }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Class");
@@ -138,7 +155,13 @@ public class MainActivity extends Activity implements Serializable{
                 String curClass = array[i];
                 myapp.setCls(curClass);
                 Log.d(TAG, "onClick: "+curClass);
-                selectSubject();
+                if (type.equals("download"))
+                {
+                    Intent intent = new Intent(MainActivity.this,DownloadQuizzes.class);
+                    startActivity(intent);
+                }
+                else
+                    selectSubject();
                 dialogInterface.dismiss();
             }
         });
@@ -175,6 +198,11 @@ public class MainActivity extends Activity implements Serializable{
             array[i] = temp.get(i);
         }
 
+        if (array.length==0){
+            toastMessage("No Quizzes downloaded for class"+cls);
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
 
         builder.setTitle("Select a subject");
@@ -207,6 +235,7 @@ public class MainActivity extends Activity implements Serializable{
         File myDir = new File(pathQ+cls+"/"+subject);
         if (!myDir.exists()){
 
+            toastMessage("No quizzes doenloaded for subject " + subject + "in class " + cls);
             Log.d(TAG, "onCreate: "+pathQ+cls+"/"+subject);
             return;
         }
@@ -215,6 +244,7 @@ public class MainActivity extends Activity implements Serializable{
 
         int count = topics.length;
         if (count==0) {
+            toastMessage("No quizzes doenloaded for subject " + subject + "in class " + cls);
             return;
         }
 
@@ -295,6 +325,10 @@ public class MainActivity extends Activity implements Serializable{
         }
         return array;
 
+    }
+
+    private void toastMessage(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
     }
 
     @Override

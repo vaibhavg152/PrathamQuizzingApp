@@ -14,9 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,12 +31,9 @@ public class AddStudents extends Activity {
     private EditText name, age;
     private Button gender, next;
     private TextView studentID,txtNumber;
-    private DatabaseReference reference;
-    private final static String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-            + "/Pratham/User/";
-
-    private String studID,Gen="";
-    int i = 1;
+    private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/";
+    private String studID,Gen="",cls,Section,school;
+    private int i = 1,NumStudents;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,20 +41,16 @@ public class AddStudents extends Activity {
         setContentView(R.layout.activity_students_data);
         Log.d(TAG, "onCreate: created");
 
-        final String school    = myapp.getSchool();
-        final String userId    = myapp.getUserId();
+        school    = myapp.getSchool();
 
-        //getting the data from intent
-        Intent incomingIntent  = getIntent();
-        final String Class     = myapp.getCls();
-        final String Section   = myapp.getSec();
-        final int NumStudents  = incomingIntent.getIntExtra("number", 0);
-        //end
+        Intent intent = getIntent();
+        cls       = intent.getStringExtra("class");
+        Section   = intent.getStringExtra("section");
+        NumStudents  = intent.getIntExtra("number", 0);
 
         Log.d(TAG, "onCreate: "+NumStudents);
 
         //initializing widgets
-        reference  = FirebaseDatabase.getInstance().getReference();
         name       = (EditText) findViewById(R.id.etStudName);
         age        = (EditText) findViewById(R.id.etStudage);
         studentID  = (TextView) findViewById(R.id.txtStudentID);
@@ -69,7 +60,7 @@ public class AddStudents extends Activity {
         //end
 
         txtNumber.setText("Student "+i+"/"+NumStudents);
-        studID = school + Class + Section + "001";
+        studID = school + cls + Section + "001";
         studentID.setText("ID: " + studID);
 
         gender.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +68,7 @@ public class AddStudents extends Activity {
             public void onClick(View view) {
 
                 final String[] arrayGenders = {"Male","Female","Others"};
-                AlertDialog.Builder builder = new AlertDialog.Builder(AddStudents.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddStudents.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
 
                 builder.setTitle("Choose your gender");
                 builder.setCancelable(false);
@@ -98,72 +89,78 @@ public class AddStudents extends Activity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //getting and checking the current data
-                int intAge;
-                String ageS = age.getText().toString();
-                String nameS = name.getText().toString();
-                if (Gen.length() == 0 || ageS.length() == 0 || nameS.length() == 0) {
-                    Toast.makeText(AddStudents.this, "Data incomplete", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    intAge = Integer.parseInt(ageS);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(AddStudents.this, "age must be a number!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                //end
-
-                Log.d(TAG, "onClick: got data");
-
-                //
-                File myDir,file;
-                String finalPath,data;
-
-                finalPath=path+myapp.getSchool()+"/"+Class+"/"+Section+"/"+studID;
-                myDir = new File(finalPath);
-                if (!myDir.exists()) myDir.mkdirs();
-
-                file = new File(myDir,"Details.txt");
-                data = nameS+"\n"+ageS+"\n"+Gen;
-                SaveData(file,data);
-                //
-
-                
-                //all the stuff needed for updating for getting the next student
-                //updating the counter
-                if (i == NumStudents - 1) {
-                    next.setText("Finish");
-                    Log.d(TAG, "onClick: finish this!");
-                } else if (i == NumStudents) {
-                    Log.d(TAG, "onClick: Doneeeee");
-                    Intent intent = new Intent(AddStudents.this, HomePage.class);
-                    startActivity(intent);
-                    Toast.makeText(AddStudents.this, "Data Stored!", Toast.LENGTH_SHORT).show();
-                }
-                i++;
-                //end
-
-                //updating the text fields on screen
-                if (i < 10)
-                    studID = school + Class + Section + "00" + i;
-                else if (i < 100)
-                    studID = school + Class + Section + "0" + i;
-                else
-                    studID = school + Class + Section + i;
-
-                Log.d(TAG, "onClick: "+studID);
-                studentID.setText("ID: " + studID);
-                txtNumber.setText("Student "+i+"/"+NumStudents);
-                Gen="";
-                age.setText("");
-                name.setText("");
-                Log.d(TAG, "onClick: yay");
-                //end
-             //end
+                storeData();
             }
         });
+
+    }
+
+    private void storeData() {
+        Log.d(TAG, "storeData: ");
+
+        int intAge;
+        String ageS = age.getText().toString();
+        String nameS = name.getText().toString();
+        if (Gen.length() == 0 || ageS.length() == 0 || nameS.length() == 0) {
+            Toast.makeText(AddStudents.this, "Data incomplete", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            intAge = Integer.parseInt(ageS);
+        } catch (NumberFormatException e) {
+            Toast.makeText(AddStudents.this, "age must be a number!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d(TAG, "onClick: got data");
+
+        //store the data
+        File myDir,file;
+        String finalPath,data;
+
+        finalPath= pathU +myapp.getSchool()+"/"+cls+"/"+Section+"/"+studID;
+        myDir = new File(finalPath);
+        if (!myDir.exists()) myDir.mkdirs();
+
+        file = new File(myDir,"Details.txt");
+        data = nameS+"\n"+ageS+"\n"+Gen;
+        SaveData(file,data);
+
+        updateFeilds();
+    }
+
+    private void updateFeilds() {
+        //updating the counter
+        i++;
+        if (i > NumStudents) {
+            Log.d(TAG, "onClick: Doneeeee");
+
+            toastMessage("Data Stored for class "+cls + Section+" :)");
+            finish();
+        }
+
+        else {
+
+            if (i == NumStudents) {
+                next.setText("Finish");
+                Log.d(TAG, "onClick: finish this!");
+            }
+
+            if (i < 10)
+                studID = school + cls + Section + "00" + i;
+            else if (i < 100)
+                studID = school + cls + Section + "0" + i;
+            else
+                studID = school + cls + Section + i;
+
+            Log.d(TAG, "onClick: " + studID);
+            studentID.setText("ID: " + studID);
+            txtNumber.setText("Student " + i + "/" + NumStudents);
+            Gen = "";
+            age.setText("");
+            name.setText("");
+            Log.d(TAG, "onClick: yay");
+        }
 
     }
 

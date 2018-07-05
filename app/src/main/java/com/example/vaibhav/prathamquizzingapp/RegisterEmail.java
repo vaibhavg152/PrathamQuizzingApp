@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,7 +26,6 @@ public class RegisterEmail extends Activity {
     private static final String TAG = "RegisterEmail";
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private EditText etEmail,etPassword;
     private Button btnDone;
 
@@ -35,24 +36,6 @@ public class RegisterEmail extends Activity {
         Log.d(TAG, "onCreate: created");
 
         mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user!=null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in :" + user.getUid());
-                    myapp.setUserId(user.getUid());
-                    toastMessage("Successfully signed in as "+user.getEmail());
-                    Intent intent = new Intent(RegisterEmail.this,Register.class);
-                    startActivity(intent);
-                }
-                else {
-                    toastMessage("Signed out. :)");
-                    Log.d(TAG, "onAuthStateChanged: signed out");
-                }
-            }
-        };
-        mAuth.addAuthStateListener(mAuthListener);
 
         etEmail     = (EditText) findViewById(R.id.etEmail);
         etPassword  = (EditText) findViewById(R.id.etPwd);
@@ -69,7 +52,28 @@ public class RegisterEmail extends Activity {
                     return;
                 }
 
-                mAuth.createUserWithEmailAndPassword(Email,pwd);
+                mAuth.createUserWithEmailAndPassword(Email,pwd).addOnCompleteListener(RegisterEmail.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()){
+                            toastMessage("User could not be created! Try again");
+                            etEmail.setText("");
+                            etPassword.setText("");
+                        }
+                        else {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if(user!=null) {
+                                Log.d(TAG, "onAuthStateChanged: signed in :" + user.getUid());
+
+                                myapp.setUserId(user.getUid());
+                                toastMessage("Successfully signed up as "+user.getEmail());
+                                Intent intent = new Intent(RegisterEmail.this,HomePage.class);
+                                startActivity(intent);
+                            }
+                        }
+                    }
+                });
+
                 toastMessage("Please Wait. It might take a few seconds :)");
                 Log.d(TAG, "onClick: signed in ");
                     }

@@ -1,4 +1,4 @@
-package com.example.vaibhav.prathamquizzingapp.classes;
+package com.example.vaibhav.prathamquizzingapp.utilClasses;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

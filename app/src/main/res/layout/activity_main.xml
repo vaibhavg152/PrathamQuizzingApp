@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme"
+    android:background="@drawable/bgborder"
     tools:context="com.example.vaibhav.prathamquizzingapp.MainActivity">
 
     <Button
@@ -15,18 +16,19 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="casual"
         android:shadowColor="@color/colorAccent"
         android:text="Teacher"
         android:textColor="#000"
         android:textSize="18sp"
+        android:drawableLeft="@drawable/icons_classroom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.423" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewmain"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnAdmin"
@@ -38,6 +40,7 @@
         android:textColor="#000"
         android:textSize="18sp"
         android:text="Admin"
+        android:drawableLeft="@drawable/icons_user"
         app:layout_constraintEnd_toEndOf="@+id/btnlogin"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -47,7 +50,7 @@
     <Button
         android:id="@+id/btnPractice"
         style="@android:style/Widget.Button.Inset"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="casual"
@@ -58,6 +61,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/icons_exam"
         app:layout_constraintStart_toStartOf="@+id/btnAdmin"
         app:layout_constraintTop_toBottomOf="@+id/btnAdmin" />
 
@@ -65,15 +69,31 @@
         android:id="@+id/imageViewmain"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="28dp"
+        android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.875"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/logo"/>
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </ImageView>
+
+    <Button
+        android:id="@+id/btnDownloadMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="84dp"
+        android:text="Download Quizzes"
+        android:drawableLeft="@drawable/icons_download"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

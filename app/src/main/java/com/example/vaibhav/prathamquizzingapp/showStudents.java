@@ -9,8 +9,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,37 +44,49 @@ public class showStudents extends Activity {
         Log.d(TAG, "onCreate: "+cls+school+section);
 
         listNames = (ListView) findViewById(R.id.listviewNames);
-        reference = FirebaseDatabase.getInstance().getReference().child("Pratham").child("Offline").child("Schools")
-                        .child(school).child(cls).child(section)
-        ;
+        reference = FirebaseDatabase.getInstance().getReference().child("users");
 
         students = new ArrayList<>();
 
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                students.clear();
-                for (DataSnapshot ds:dataSnapshot.getChildren()){
-                    if (ds.hasChild("Name")) {
-                        String name = ds.child("Name").getValue(String.class);
-                        students.add(name);
-                        Log.d(TAG, "onDataChange: "+name);
+                for (DataSnapshot user:dataSnapshot.getChildren()) {
+
+                    if (!(user.child("School").getValue(String.class).equals(school))) {
+                        continue;
                     }
-                    else Log.d(TAG, "onDataChange: not found");
+
+                    if (!user.child("Classes").hasChild(cls)) {
+                        toastMessage("No data found for " + cls + " for school " + school);
+                        return;
+                    }
+
+                    if (!user.child("Classes").child(cls).hasChild(section)) {
+                        toastMessage("No data found for " + cls + " " + section + "in school " + school);
+                    }
+
+                    students.clear();
+                    for (DataSnapshot student:user.child(school).child(cls).child(section).getChildren()){
+                        if (student.hasChild("Name")) {
+                            String name = student.child("Name").getValue(String.class);
+                            students.add(name);
+                            Log.d(TAG, "onDataChange: "+name);
+                        }
+                        else Log.d(TAG, "onDataChange: not found");
+                    }
+                    ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_expandable_list_item_1,students);
+                    listNames.setAdapter(adapter);
                 }
-
-                ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_expandable_list_item_1,students);
-                listNames.setAdapter(adapter);
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-
         });
+
 
         listNames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -84,4 +97,9 @@ public class showStudents extends Activity {
             }
         });
     }
+
+    private void toastMessage(String s) {
+        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
+    }
+
 }

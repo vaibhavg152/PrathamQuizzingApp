@@ -23,31 +23,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.043" />
 
-    <TextView
-        android:id="@+id/tvCorrectAns"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
-        android:gravity="center"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvIsCorrect" />
-
     <ImageView
         android:id="@+id/imgQuizClip"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/btnNextQues"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCorrectAns" />
+        app:layout_constraintRight_toRightOf="parent" />
 
     <Button
         android:id="@+id/btnNextQues"

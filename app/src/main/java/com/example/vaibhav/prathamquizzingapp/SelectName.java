@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,8 +30,8 @@ public class SelectName extends Activity {
     private static final String TAG = "SelectName";
 
     private ListView listNames;
-    private String childName,userId;
-    private final String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/";
+    private String childName;
+    private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,8 +39,6 @@ public class SelectName extends Activity {
         setContentView(R.layout.activity_select_name);
         Log.d(TAG, "onCreate: created");
 
-
-        userId              = myapp.getUserId();
         final String cls    = myapp.getCls();
         final String sec    = myapp.getSec();
         final String School = myapp.getSchool();
@@ -53,7 +51,7 @@ public class SelectName extends Activity {
 
         int rollNo = 1;String id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
 
-        String finalPath = path + School + "/" + cls + "/" + sec + "/" + id;
+        String finalPath = pathU + School + "/" + cls + "/" + sec + "/" + id;
         Log.d(TAG, "onCreate: "+finalPath);
         File myDir = new File(finalPath);
         while (myDir.exists()) {
@@ -69,7 +67,7 @@ public class SelectName extends Activity {
             rollNo++;
             id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
 
-            myDir = new File(path + School + "/" + cls + "/" + sec + "/" + id);
+            myDir = new File(pathU + School + "/" + cls + "/" + sec + "/" + id);
         }
 
         ArrayAdapter adapterNames = new ArrayAdapter(SelectName.this, android.R.layout.simple_expandable_list_item_1, namesarray);
@@ -81,13 +79,10 @@ public class SelectName extends Activity {
 
                     childName = namesarray.get(i);
                     Intent intent = new Intent(SelectName.this, QuizActivity.class);
-                    intent.putExtra("section", sec);
-                    intent.putExtra("title", title);
-                    intent.putExtra("student", childName);
                     intent.putExtra("childId",arrayId.get(i));
                     intent.putExtra("user",true);
                     startActivity(intent);
-
+                    finish();
                 }
         });
     }

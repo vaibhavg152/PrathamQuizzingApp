@@ -3,11 +3,10 @@ package com.example.vaibhav.prathamquizzingapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
-import com.example.vaibhav.prathamquizzingapp.classes.PersonListAdapter;
-import com.example.vaibhav.prathamquizzingapp.classes.Score;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.PersonListAdapter;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.Score;
 
 import java.util.ArrayList;
 

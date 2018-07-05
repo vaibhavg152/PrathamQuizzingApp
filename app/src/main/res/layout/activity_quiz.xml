@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bgappkids">
+    android:background="@drawable/bg_quiz">
 
     <TextView
         android:id="@+id/txtScore"
@@ -47,10 +47,12 @@
 
     <Button
         android:id="@+id/btnA"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginStart="70dp"
         android:layout_marginTop="16dp"
         android:minWidth="100dp"
         android:text="A."
@@ -63,10 +65,12 @@
 
     <Button
         android:id="@+id/btnB"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="35dp"
         android:layout_marginTop="8dp"
         android:minWidth="100dp"
         android:text="B."
@@ -76,10 +80,12 @@
 
     <Button
         android:id="@+id/btnC"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginStart="70dp"
         android:layout_marginTop="8dp"
         android:minWidth="100dp"
         android:padding="0dp"
@@ -90,20 +96,34 @@
 
     <Button
         android:id="@+id/btnD"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginStart="70dp"
         android:layout_marginTop="8dp"
         android:minWidth="100dp"
         android:text="D."
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnC" />
+
+    <Button
+        android:id="@+id/btnPlayAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_action_name"
+        android:enabled="false"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/btnA"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageQuiz"
+        app:layout_constraintTop_toBottomOf="@+id/Question" />
 
 </android.support.constraint.ConstraintLayout>

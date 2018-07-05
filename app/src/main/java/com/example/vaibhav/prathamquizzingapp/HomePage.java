@@ -17,8 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.vaibhav.prathamquizzingapp.classes.Sections;
-import com.example.vaibhav.prathamquizzingapp.classes.myapp;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.Sections;
+import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,13 +44,13 @@ public class HomePage extends Activity {
 
     private static final String TAG = "HomePage";
 
-    private Button btnUpload, btnDownload, btnStartQuiz, btnSignOut,btnSyncData,btnAddStudents;
     private FirebaseAuth mAuth;
-    private final String pathDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-    private final String pathU = pathDownloads + "/Pratham/User/",pathQ = pathDownloads + "/Pratham/Quizzes/";
-    private String userId,school;
-    private Boolean isConnected;
     private DatabaseReference databaseReference;
+    private Button btnUpload, btnDownload, btnStartQuiz, btnSignOut, btnComplete,btnViewScores;
+    private Boolean isConnected;
+    private String userId,school;
+    private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/",
+                         pathQ = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/Quizzes/";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,40 +61,38 @@ public class HomePage extends Activity {
         btnUpload      = (Button) findViewById(R.id.btnUploadH);
         btnDownload    = (Button) findViewById(R.id.btnDownloadH);
         btnStartQuiz   = (Button) findViewById(R.id.btnStartQuizH);
-        btnAddStudents = (Button) findViewById(R.id.btnAddStudents);
         btnSignOut     = (Button) findViewById(R.id.btnSignOut);
-        btnSyncData    = (Button) findViewById(R.id.btnSyncData);
+        btnComplete = (Button) findViewById(R.id.btnSyncData);
+        btnViewScores  = (Button) findViewById(R.id.btnViewAvgScore);
 
         school = myapp.getSchool();
 
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Pratham");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         Log.d(TAG, "onCreate: wow");
 
         getUserData();
+
         ConnectivityManager manager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         isConnected = (networkInfo!=null && networkInfo.isConnectedOrConnecting());
+
+        btnComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomePage.this,Register.class);
+                startActivity(intent);
+                btnComplete.setVisibility(View.INVISIBLE);
+                setBtnVisible();
+            }
+        });
 
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 uploadScores();
-            }
-        });
-
-        btnSyncData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                syncData();
-            }
-        });
-
-        btnAddStudents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {selectClass("addStudents");
             }
         });
 
@@ -105,14 +103,16 @@ public class HomePage extends Activity {
             }
         });
 
+        btnViewScores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectClass("view");
+            }
+        });
+
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isConnected){
-                    toastMessage("you are not connected to the internet!");
-                    return;
-                }
-
                 selectClass("btnDownload");
             }
         });
@@ -134,21 +134,24 @@ public class HomePage extends Activity {
         Log.d(TAG, "getUserData: ");
         File myDir = new File(pathU);
         if (!myDir.exists()){
-            toastMessage("No data found. Download the data first!");
+            setInvisible();
             return;
         }
         File file = new File(myDir,"BasicData.txt");
         String[] details = readData(file);
         if (details.length==0){
-            toastMessage("Error! Download the data first:(");
+            setInvisible();
             return;
         }
 
         school = details[0];
-        ArrayList<String> clas = new ArrayList<>();
-        for (int i=2;i<details.length;i++){
-            clas.add(details[i]);
-            Log.d(TAG, "getUserData: "+details[i]);
+        int count = details.length-2;
+        String[] clas = new String[count];
+
+        Log.d(TAG, "getUserData: "+count);
+        for (int i= 0; i< count; i++){
+            clas[i] = details[i+2];
+            Log.d(TAG, "getUserData: "+clas[i]);
         }
 
         myapp.setSchool(school);
@@ -161,7 +164,7 @@ public class HomePage extends Activity {
             file =new File(myDir,"Sections.txt");
             String[] arraySections = readData(file);
             if (arraySections.length==0){
-                toastMessage("Error! Download the data first:(");
+                setInvisible();
                 return;
             }
 
@@ -173,12 +176,18 @@ public class HomePage extends Activity {
             section.setSections(SectionsList);
             myapp.addSection(section);
         }
+
     }
 
     private void selectClass(final String type) {
 
         final String[] array = myapp.getClsArray();
         Log.d(TAG, "selectClass: "+array.length);
+
+        if (array.length==0){
+            toastMessage("No classes to show!! You can try 'Download data'");
+            return;
+        }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Class");
@@ -188,12 +197,20 @@ public class HomePage extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String curClass = array[i];
                 myapp.setCls(curClass);
+
                 dialogInterface.dismiss();
                 Log.d(TAG, "onClick: "+curClass);
                 if (type.equals("btnDownload")){
+
+                    if (!isConnected){
+                        toastMessage("you are not connected to the internet!");
+                        return;
+                    }
                     Intent intent = new Intent(HomePage.this,DownloadQuizzes.class);
                     startActivity(intent);
                 }
+                else if (type.equals("view"))
+                    selectSubject(type);
                 else selectSection(type);
                 dialogInterface.dismiss();
             }
@@ -216,8 +233,14 @@ public class HomePage extends Activity {
         final String cls = myapp.getCls();
         Log.d(TAG, "selectSection: ");
         final String[] array = myapp.getSections(cls);
+
+        if (array.length==0){
+            toastMessage("No sections added for class " + cls);
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
-        builder.setTitle("Select a Class");
+        builder.setTitle("Select a section");
         builder.setCancelable(false);
         builder.setSingleChoiceItems(array, -1,new DialogInterface.OnClickListener() {
             @Override
@@ -227,9 +250,8 @@ public class HomePage extends Activity {
                 myapp.setSec(curSection);
                 Log.d(TAG, "onClick: "+curSection);
                 if (type.equals("quiz")){
-                    selectSubject();
+                    selectSubject("");
                 }
-                else enterNumStudents();
                 dialogInterface.dismiss();
             }
         });
@@ -245,14 +267,14 @@ public class HomePage extends Activity {
         dialog.show();
     }
 
-    private void selectSubject() {
+    private void selectSubject(final String type) {
 
-        Log.d(TAG, "selectSection: ");
+        Log.d(TAG, "selectSubject: ");
         final String[] array = getResources().getStringArray(R.array.Subjects);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
 
-        builder.setTitle("Select a Class");
+        builder.setTitle("Select a Subject");
         builder.setCancelable(false);
         builder.setSingleChoiceItems(array, -1,new DialogInterface.OnClickListener() {
             @Override
@@ -261,7 +283,8 @@ public class HomePage extends Activity {
                 dialogInterface.dismiss();
                 myapp.setSubject(curSubject);
                 Log.d(TAG, "onClick: "+curSubject);
-                selectTopic(curSubject);
+
+                selectTopic(curSubject, type);
                 dialogInterface.dismiss();
             }
         });
@@ -277,15 +300,28 @@ public class HomePage extends Activity {
         dialog.show();
     }
 
-    private void selectTopic(String subject) {
+    private void selectTopic(String subject, final String type) {
 
+        Log.d(TAG, "selectTopic: view");
         final String cls = myapp.getCls();
-        File myDir = new File(pathQ + cls + "/" + subject);
+
+        File myDir;
+        if (type.equals("view")){
+            myDir = new File(pathU + cls + "/" + subject);
+            if (!myDir.exists()){
+                toastMessage("No data found for this subject");
+                return;
+            }
+        }
+
+        String finalPath = pathQ + cls + "/" + subject;
+        myDir = new File(finalPath);
         if (!myDir.exists()){
-            toastMessage("No Quizzes. Download the Quizzes first!");
-            Log.d(TAG, "onCreate: "+ pathQ + cls + "/" + subject);
+            toastMessage("No Quizzes found. Download the Quizzes first!");
+            Log.d(TAG, "onCreate: "+ finalPath);
             return;
         }
+
         File file = new File(myDir,"topics.txt");
         final String[] titles = readData(file);
 
@@ -295,7 +331,7 @@ public class HomePage extends Activity {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Topic");
         builder.setCancelable(false);
         builder.setSingleChoiceItems(titles, -1,new DialogInterface.OnClickListener() {
@@ -303,11 +339,15 @@ public class HomePage extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String curTitle = titles[i];
                 myapp.setQuizTitle(curTitle);
-                dialogInterface.dismiss();
                 Log.d(TAG, "onClick: "+curTitle);
                 dialogInterface.dismiss();
-                Intent intent = new Intent(HomePage.this,SelectName.class);
-                startActivity(intent);
+
+                if (type.equals("view"))
+                    viewScores();
+                else {
+                    Intent intent = new Intent(HomePage.this, SelectName.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -322,40 +362,43 @@ public class HomePage extends Activity {
         dialog.show();
     }
 
-    private void enterNumStudents() {
+    private void viewScores() {
 
-        Log.d(TAG, "enterNumStudents: ");
-        final Dialog dialog = new Dialog(HomePage.this);
-        dialog.setContentView(R.layout.dialog_edit_number);
-
-        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
-        Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
-        et.setEnabled(true);
-        btnDone.setEnabled(true);
-
-        btnDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String number = et.getText().toString().trim();
-                int numStudents;
-                try {
-                    numStudents = Integer.parseInt(number);
-
-                }catch (NumberFormatException e){
-                    e.printStackTrace();
-                    toastMessage("Not a number!");
-                    return;
+        Log.d(TAG, "viewScores: ");
+        File myDir,file;
+        String filePath = pathU + myapp.getCls() + "/" + myapp.getSubject() + "/" + myapp.getQuizTitle();
+        myDir = new File(filePath);
+        if (!myDir.exists()){
+            toastMessage("No data found for the chosen fields");
+            return;
+        }
+        else {
+            file = new File(myDir,"Scores.txt");
+            String[] result = readData(file);
+            int count = result.length;
+            if (count > 2) {
+                String[] attempts  = new String[count/3];
+                String[] correct   = new String[count/3];
+                String[] questions = new String[count/3];
+                int[]    qNum = new int[count/3];
+                int j=0;
+                for (int i = 1; i < count-2; i+=3){
+                    qNum[j] = j+1;
+                    questions[j] = result[i];
+                    correct  [j] = result[i+1] + " correct out of " + result[i+2];
+                    attempts [j] = result[i+2];
+                    j++;
                 }
 
-                dialog.dismiss();
-                Intent intent = new Intent(HomePage.this,AddStudents.class);
-                intent.putExtra("number",numStudents);
+                Intent intent = new Intent(HomePage.this,showScore.class);
+                intent.putExtra("Score","null");
+                intent.putExtra("Questions",questions);
+                intent.putExtra("Answers"  ,correct);
+                intent.putExtra("Qnumbers" ,qNum);
                 startActivity(intent);
             }
-        });
-
-        dialog.show();
-
+            else toastMessage("No data stored!");
+        }
     }
 
     private void uploadStatus(String school,String Cls) {
@@ -369,60 +412,26 @@ public class HomePage extends Activity {
         String dateStr = date + "-" + month + "-" + year;
 
         Log.d(TAG, "uploadStatus: "+dateStr);
-        databaseReference.child("Offline").child("Update Report").child(school).child(Cls).setValue(dateStr);
+        databaseReference.child("Update Report").child(school).child(Cls).setValue(dateStr);
 
     }
 
-    private boolean uploadStatusClass(String cls, String school) {
-
-        Log.d(TAG, "uploadStatusClass: ");
-
-        String[] subs = getResources().getStringArray(R.array.Subjects);
-        for (String subject:subs) {
-
-            String finalPath = pathQ + cls + "/" + subject;
-            Log.d(TAG, "uploadStatusClass: "+finalPath);
-            File myDir = new File(finalPath);
-            if (!myDir.exists()) continue;
-
-            Log.d(TAG, "uploadStatusClass: exists");
-
-            String[] sections = myapp.getSections(cls);
-            for (String sec : sections) {
-                if (uploadStatusSec(school, cls, sec, subject, myDir)) continue;
-            }
-        }
-        return false;
-    }
-
-    private boolean uploadStatusSec(String school, String cls, String sec, String subject, File myDir) {
-
-        Log.d(TAG, "uploadStatusSec: ");
-
-        File file = new File(myDir, "/topics.txt");
-        String[] topics = readData(file);
-
-        if (topics.length == 0)
-            return true;
-
-        String section = "" + sec;
+    private void uploadSec(String school, String cls, String sec, String subject) {
+        Log.d(TAG, "uploadSec: ");
 
         String finalPath = pathU + school + "/" + cls + "/" + sec;
 
-        File myDire = new File(finalPath);
-        if (!myDire.exists()) {
-            return true;
+        File myDir = new File(finalPath);
+        if (!myDir.exists()) {
+            return;
         }
 
-        DatabaseReference tempRef = databaseReference.child("Offline").child("Schools").child(school)
-                .child(cls).child(section);
+        DatabaseReference tempRef = databaseReference.child("users").child(userId).child("Classes").child(cls).child(sec);
 
         uploadStatus(school, cls + sec);
-        uploadTeacherScore(tempRef, topics, subject);
-        uploadStudentScore(tempRef, school, cls, section, subject);
+        uploadStudentScore(tempRef, school, cls, sec, subject);
 
         Log.d(TAG, "uploadScores: " + finalPath);
-        return false;
     }
 
     private void uploadScores() {
@@ -435,8 +444,24 @@ public class HomePage extends Activity {
 
         String school = myapp.getSchool();
         String[] clses = myapp.getClsArray();
+        DatabaseReference teacherRef = databaseReference.child("users").child(userId).child("Scores");
+
         for (String cls:clses) {
-            if(uploadStatusClass(cls,school)) continue;
+
+            String[] subs = getResources().getStringArray(R.array.Subjects);
+            for (String subject:subs) {
+
+                uploadTeacherScore(teacherRef,cls,subject);
+                toastMessage("Uploaded the teacher Scores. :)");
+
+                String[] sections = myapp.getSections(cls);
+                for (String sec : sections) {
+
+                    uploadSec(school, cls, sec, subject);
+
+                }
+            }
+
         }
     }
 
@@ -444,46 +469,35 @@ public class HomePage extends Activity {
 
         int rollNo = 1;String id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
         String finalPath = pathU + School + "/" + cls + "/" + sec + "/" + id;
+
         Log.d(TAG, "uploadStudentScore: "+finalPath);
         File myDir = new File(finalPath);
+
         while (myDir.exists()) {
 
-            //scores
-            File file = new File(myDir + "/" + subject,"Scores.txt");
+            //details
+            File file = new File(myDir,"Details.txt");
             String[] result = readData(file);
             int count = result.length;
-            if (result.length!=0) {
-                for (int i = 0; i < count; i += 3) {
-                    reference.child(id).child("Scores").child(result[i]).child("Score").setValue(result[i + 1]);
-                    reference.child(id).child("Scores").child(result[i]).child("%Score").setValue(result[i + 2]);
+            if (count!=0) {
+
+                reference.child(id).child("Name").setValue(result[0]);
+                reference.child(id).child("Age").setValue(result[1]);
+                reference.child(id).child("Gender").setValue(result[2]);
+                Log.d(TAG, "uploadStudentScore: user");
+
+                //scores
+                file = new File(myDir + "/" + subject,"Scores.txt");
+                result = readData(file);
+                count = result.length;
+                if (result.length!=0) {
+                    for (int i = 0; i < count; i += 3) {
+                        reference.child(id).child("Scores").child(subject).child(result[i]).child("Score").setValue(result[i + 1]);
+                        reference.child(id).child("Scores").child(subject).child(result[i]).child("%Score").setValue(result[i + 2]);
+                    }
                 }
             }
-            //
 
-
-            //details
-            file = new File(myDir,"Details.txt");
-            result = readData(file);
-            count = result.length;
-            if (count==0){
-                toastMessage("Error! :(");
-                return;
-            }
-            //
-
-            //storing the data in firebase
-            DatabaseReference tempRef = databaseReference.child("users").child(userId).child("Classes").child(cls).child(sec).child(id);
-            tempRef.child("Name").setValue(result[0]);
-            tempRef.child("Age").setValue(result[1]);
-            tempRef.child("Gender").setValue(result[2]);
-            Log.d(TAG, "uploadStudentScore: user");
-
-            tempRef = databaseReference.child("Offline").child("Schools").child(school).child(cls).child(sec).child(id);
-            tempRef.child("Name").setValue(result[0]);
-            tempRef.child("Age").setValue(result[1]);
-            tempRef.child("Gender").setValue(result[2]);
-            Log.d(TAG, "uploadStudentScore: offline");
-            //
 
             rollNo++;
             id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
@@ -491,181 +505,74 @@ public class HomePage extends Activity {
             myDir = new File(finalPath);
 
         }
+
+        toastMessage("Uploaded all the scores and details. :)");
     }
 
-    private void uploadTeacherScore(DatabaseReference tempRef, String[] topics, String subject) {
+    private void uploadTeacherScore(DatabaseReference tempRef,String cls, String subject) {
 
         Log.d(TAG, "uploadTeacherScore: ");
-        File myDir,file;
+        File myDir = new File(pathQ + cls + "/" + subject);
+        File file = new File(myDir, "/topics.txt");
+        String[] topics = readData(file);
+
         if (topics.length==0)
             return;
 
-        for (String s:topics){
-            Log.d(TAG, "uploadTeacherScore: "+s);
-            myDir = new File(pathU + subject + "/" + s);
-            if (myDir.exists()){
+        myDir = new File(pathU + cls + "/" + subject);
+        if (myDir.exists()) {
 
-                Log.d(TAG, "uploadTeacherScore: exists");
-                file = new File(myDir, "Scores.txt");
-                String[] scores = readData(file);
-                int numQues = scores.length;
-                if (numQues==0) {
-                    toastMessage("Error! :(");
-                    return;
-                }
+            file  = new File(myDir, "Scores.txt");
+            String[] tempScores = readData(file);
+            int count = tempScores.length;
+            Log.d(TAG, "uploadTeacherScore: "+count);
 
-                for (int q_no=1;q_no<numQues;q_no+=2) {
-                    String score = scores[q_no] + "/" + scores[q_no+1];
-                    tempRef.child("Teacher").child(s).child("Q" + q_no).setValue(score);
-                }
-            }
-            else continue;
-        }
-    }
+            if (count > 2) {
 
-    private void syncData() {
+                SaveData(file,"");
+                for (final String s : topics) {
+                    Log.d(TAG, "uploadTeacherScore: " + s);
+                    final long[] totalCorrect = {0};
+                    final long[] totalAttempts = {0};
 
-        Log.d(TAG, "syncData: ");
-        if (!isConnected){
-            toastMessage("you are not connected to the internet!");
-            return;
-        }
-        DatabaseReference tempref = databaseReference.child("users").child(userId);
-        tempref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+                    tempRef = tempRef.child(cls).child(subject);
 
-                //Save Teacher's basic info
-                myapp.clearSections();
-
-                ArrayList<String> classes = new ArrayList<>();
-                for(DataSnapshot aClass: dataSnapshot.child("Classes").getChildren()){
-                    String curClass = aClass.getKey();
-                    classes.add(curClass);
-                    ArrayList<String> Sec = new ArrayList<>();
-                    for (DataSnapshot aSec: aClass.getChildren()){
-                        Sec.add(aSec.getKey());
-                    }
-                    Sections section = new Sections(curClass);
-                    section.setSections(Sec);
-                    myapp.addSection(section);
-                }
-
-                String School  = dataSnapshot.child("School").getValue(String.class);
-
-                Log.d(TAG, "onDataChange: teacher added"+School);
-                myapp.setSchool(School);
-                myapp.setClses(classes);
-
-                File myDir = new File(pathU);
-                if (!myDir.exists()) myDir.mkdirs();
-                File file = new File(myDir,"BasicData.txt");
-                String data = School+"\n";
-                for (String c:classes){
-                    data += c +"\n";
-                }
-                SaveData(file,data);
-                //
-
-                //Save teacher's scores
-                if (dataSnapshot.hasChild("Scores")) {
-                    for (DataSnapshot snapshot : dataSnapshot.child("Scores").getChildren()) {
-                        String topic = snapshot.child("Title").getValue(String.class);
-                        myDir = new File(pathU + topic);
-                        if (!myDir.exists()) myDir.mkdirs();
-                        file = new File(myDir, "Scores.txt");
-                        data = "";
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            data += ds.getValue(String.class) + "\n";
+                    tempRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild(s)) {
+                                totalCorrect [0] = dataSnapshot.child(s).child("Correct" ).getValue(long.class);
+                                totalAttempts[0] = dataSnapshot.child(s).child("Attempts").getValue(long.class);
+                                Log.d(TAG, "onDataChange: "+totalAttempts[0]);
+                            }
                         }
-                        SaveData(file, data);
-                    }
-                }//
-                syncStudents(dataSnapshot,School);
-            }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
 
-            }
-        });
+                    for (int i = 0; i < count - 2; i += 3) {
+                        if (tempScores[i].equals(s))
+                        try {
+                            totalCorrect [0] += Integer.parseInt(tempScores[i + 1]);
+                            totalAttempts[0] += Integer.parseInt(tempScores[i + 2]);
+                            Log.d(TAG, "uploadTeacherScore: " + totalAttempts[0] + tempScores[i + 2]);
 
-        getUserData();
-
-    }
-
-    private void syncStudents(DataSnapshot dataSnapshot, String school) {
-        Log.d(TAG, "onDataChange: teacher scores added");
-
-        File file, myDir;
-
-        //Save Students' data
-        for (DataSnapshot aClass : dataSnapshot.child("Classes").getChildren()) {
-
-            String curClass = aClass.getKey();
-            String sections = "", data;
-            Log.d(TAG, "syncStudents: " + curClass);
-
-            if (aClass.getChildrenCount()==0)
-                continue;
-            for (DataSnapshot aSec : aClass.getChildren()) {
-
-                String curSection = aSec.getKey();
-                sections += curSection+"\n";
-                Log.d(TAG, "syncStudents: " + curSection);
-
-                if (aSec.getChildrenCount()==0)
-                    continue;
-                for (DataSnapshot aChild : aSec.getChildren()) {
-
-                    //Save Students' basic info
-                    String id = aChild.getKey();
-                    Log.d(TAG, "syncStudents: "+id);
-
-                    String age = aChild.child("Age").getValue(String.class);
-                    String stName = aChild.child("Name").getValue(String.class);
-                    String gender = aChild.child("Gender").getValue(String.class);
-                    myDir = new File(pathU + school + "/" + curClass + "/" + curSection + "/" + id);
-                    if (!myDir.exists()) myDir.mkdirs();
-                    data = stName + "\n" + age + "\n" + gender + "\n";
-
-                    file = new File(myDir, "Details.txt");
-                    SaveData(file, data);
-                    //
-
-                    Log.d(TAG, "onDataChange: Students added");
-                    //Save Students' scores
-
-                    if (aChild.hasChild("Scores")) {
-                        Log.d(TAG, "onDataChange: has scores");
-
-                        for (DataSnapshot aSubject : aChild.child("Scores").getChildren()) {
-
-                            String curSubject = aSubject.getKey();
-                            myDir = new File(myDir+"/"+curSubject);
-                            if (!myDir.exists()) myDir.mkdirs();
-                            file = new File(myDir, "Scores.txt");
-                            data = "";
-
-                            for (DataSnapshot ds:aSubject.getChildren())
-                                data += ds.getKey() + "\n" + ds.getValue() + "\n";
-
-                            SaveData(file, data);
-                            Log.d(TAG, "onDataChange: Students scores added");
-
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
                         }
                     }
 
+                    if (totalAttempts[0]!=0) {
+                        Log.d(TAG, "uploadTeacherScore: not 0");
+                        double avgScore = 100 * totalCorrect[0] / totalAttempts[0];
+                        tempRef.child(s).child("Correct").setValue(totalCorrect[0]);
+                        tempRef.child(s).child("Attempts").setValue(totalAttempts[0]);
+                        tempRef.child(s).child("averageScore").setValue(avgScore);
+                    }
                 }
-
             }
-
-            myDir = new File(pathU + school + "/" + curClass);
-            if (!myDir.exists()) myDir.mkdirs();
-
-            file = new File(myDir, "Sections.txt");
-            SaveData(file, sections);
-            Log.d(TAG, "syncStudents: saved for " + curClass);
         }
     }
 
@@ -675,7 +582,6 @@ public class HomePage extends Activity {
             fos = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            toastMessage("Error! File Not found :(");
             return;
         }
 
@@ -684,7 +590,6 @@ public class HomePage extends Activity {
                 fos.write(data.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
-                toastMessage("Error! :(");
                 return;
             }
         }
@@ -692,12 +597,10 @@ public class HomePage extends Activity {
             try { fos.close();}
             catch (IOException e) {
                 e.printStackTrace();
-                toastMessage("Error! :(");
                 return;
             }
             catch (NullPointerException e){
                 e.printStackTrace();
-                toastMessage("Error! :(");
                 return;
             }
         }
@@ -757,6 +660,25 @@ public class HomePage extends Activity {
         }
         return array;
 
+    }
+
+    private void setBtnVisible() {
+        toastMessage("Basic data stored. :)");
+        btnUpload      .setVisibility(View.VISIBLE);
+        btnDownload    .setVisibility(View.VISIBLE);
+        btnStartQuiz   .setVisibility(View.VISIBLE);
+        btnViewScores  .setVisibility(View.VISIBLE);
+
+        btnComplete.setVisibility(View.INVISIBLE);
+    }
+
+    private void setInvisible() {
+
+        toastMessage("Error! Complete the registration first. :)");
+        btnUpload      .setVisibility(View.INVISIBLE);
+        btnDownload    .setVisibility(View.INVISIBLE);
+        btnStartQuiz   .setVisibility(View.INVISIBLE);
+        btnViewScores  .setVisibility(View.INVISIBLE);
     }
 
 }

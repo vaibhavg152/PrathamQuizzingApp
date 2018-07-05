@@ -1,4 +1,4 @@
-package com.example.vaibhav.prathamquizzingapp.classes;
+package com.example.vaibhav.prathamquizzingapp.utilClasses;
 
 /**
  * Created by vaibhav on 23/6/18.

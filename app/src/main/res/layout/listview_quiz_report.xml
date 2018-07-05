@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="25dp">
+
+    <TextView
+        android:id="@+id/tvQnum"
+        android:layout_weight="8"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteY="244dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_weight="2"
+            android:textSize="14sp"
+            android:background="#F44336"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteY="244dp" />
+
+        <TextView
+            android:id="@+id/tvListCorrectAns"
+            android:textSize="14sp"
+            android:background="#AED581"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            tools:layout_editor_absoluteY="164dp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

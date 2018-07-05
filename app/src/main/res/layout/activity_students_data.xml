@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bgapp2"
+    android:background="@drawable/bgborder2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -77,34 +77,32 @@
         android:id="@+id/etStudage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="age"
         android:inputType="number"
         android:textColor="#000"
-        app:layout_constraintBottom_toTopOf="@+id/btnNextStud"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etStudgender"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/etStudName" />
 
     <Button
         android:id="@+id/etStudgender"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="Gender(Write male or female)"
         android:inputType="textPersonName"
+        android:text="Select Gender"
         android:textColor="#000"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etStudName" />
+        app:layout_constraintTop_toBottomOf="@+id/etStudage" />
 
     <Button
         android:id="@+id/btnNextStud"
