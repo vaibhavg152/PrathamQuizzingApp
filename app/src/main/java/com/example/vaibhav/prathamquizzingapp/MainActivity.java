@@ -148,6 +148,7 @@ public class MainActivity extends Activity implements Serializable{
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Class");
+        builder.setCancelable(false);
 
         builder.setSingleChoiceItems(array, -1, new DialogInterface.OnClickListener() {
             @Override

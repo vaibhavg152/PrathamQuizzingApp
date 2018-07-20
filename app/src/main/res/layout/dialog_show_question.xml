@@ -30,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="24dp"
+        android:src="@drawable/thestar"
         android:layout_marginRight="24dp"
         app:layout_constraintBottom_toTopOf="@+id/btnNextQues"
         app:layout_constraintLeft_toLeftOf="parent"

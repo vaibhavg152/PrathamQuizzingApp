@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
@@ -40,6 +41,9 @@ public class RegisterEmail extends Activity {
         etEmail     = (EditText) findViewById(R.id.etEmail);
         etPassword  = (EditText) findViewById(R.id.etPwd);
         btnDone     = (Button)   findViewById(R.id.btnDoneLogin);
+
+        TextView txt = (TextView) findViewById(R.id.txtForgotPassword);
+        txt.setVisibility(View.INVISIBLE);
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override

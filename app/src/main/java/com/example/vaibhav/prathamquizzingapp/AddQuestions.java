@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vaibhav.prathamquizzingapp.utilClasses.myapp;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -74,6 +77,8 @@ public class AddQuestions extends Activity {
         txtTitle        = (TextView)    findViewById(R.id.txtQno);
         progressBar     = (ProgressBar) findViewById(R.id.proBarbro);
         storageReference = FirebaseStorage.getInstance().getReference();
+
+        uriUploaded = null;
 
         //getting data
         cls     = myapp.getCls();
@@ -171,6 +176,21 @@ public class AddQuestions extends Activity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 answer = array[i];
+                if (Build.VERSION.SDK_INT>=21) {
+                    etA.setBackground(null);
+                    etB.setBackground(null);
+                    etC.setBackground(null);
+                    etD.setBackground(null);
+                    if (i == 0)
+                        etA.setBackground(getDrawable(R.drawable.correct_green));
+                    else if (i == 1)
+                        etB.setBackground(getDrawable(R.drawable.correct_green));
+                    else if (i == 2)
+                        etC.setBackground(getDrawable(R.drawable.correct_green));
+                    else if (i == 3)
+                        etD.setBackground(getDrawable(R.drawable.correct_green));
+                }//else
+                    btnAns.setText("answer selected "+array[i]);
                 Log.d(TAG, "onClick: "+answer);
                 dialogInterface.dismiss();
                 btnDone.setEnabled(true);
@@ -200,6 +220,7 @@ public class AddQuestions extends Activity {
         refCurQues.child("C").setValue(optC);
         refCurQues.child("D").setValue(optD);
         refCurQues.child("Ans").setValue(ans);
+        if (uriUploaded!=null)
         refCurQues.child("Image").setValue(uriUploaded.toString());
     }
 
@@ -222,14 +243,13 @@ public class AddQuestions extends Activity {
 
         else if(Qno>numQues){
             toastMessage("Quiz successfully added!");
-            Intent intent1 = new Intent(AddQuestions.this,SuperUser.class);
-            startActivity(intent1);
+            finish();
         }
     }
 
     private void uploadImage() {
 
-        StorageReference fileReference = storageReference.child("images/"+System.currentTimeMillis()+"."+getExtension(uriImage));
+        StorageReference fileReference = storageReference.child("images/" + cls +"/" + subject + "/" + myapp.getQuizTitle() + "Q"+Qno +"."+getExtension(uriImage));
         fileReference.putFile(uriImage)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -278,6 +298,8 @@ public class AddQuestions extends Activity {
             else if (requestCode == AUDIO_REQUEST) {
                 uriAudio = data.getData();
                 Log.d(TAG, "onActivityResult: audio");
+
+                btnDone.setEnabled(false);
                 StorageReference ref = storageReference.child("audios/" + cls +"/" + subject + "/" + myapp.getQuizTitle() + "Q"+Qno + ".mp3");
 
                 ref.putFile(uriAudio).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -298,10 +320,14 @@ public class AddQuestions extends Activity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                     }
+                }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        btnDone.setEnabled(true);
+                    }
                 });
             }
-        }
-        toastMessage("Error! :(");
+        }else toastMessage("Error! :(");
     }
 
     private void openFileChooser() {

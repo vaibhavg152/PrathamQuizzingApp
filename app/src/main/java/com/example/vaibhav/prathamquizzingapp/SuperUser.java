@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -90,17 +91,19 @@ public class SuperUser extends Activity {
             public void onClick(View view) {
 
                 mAuth.signOut();
-                Intent intent= new Intent(SuperUser.this,MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
         btnViewTeachers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //to be written
-                toastMessage("to be written");
 
+                Log.d(TAG, "onClick: blow");
+                Uri uri = Uri.parse("http://prathamquizzing.herokuapp.com");
+                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                toastMessage("to be written");
             }
         });
 
@@ -373,6 +376,7 @@ public class SuperUser extends Activity {
                     String[] titles = new String[topics.length];
                     int pos = 0;
                     if (topics.length==0){
+                        toastMessage("No quiz found");
                         Log.d(TAG, "onClick: empty");
                         return;
                     }
@@ -387,7 +391,6 @@ public class SuperUser extends Activity {
                     selectTopic(titles,topics,type);
                     dialogInterface.dismiss();
                 }
-
 
             }
         });
@@ -404,40 +407,12 @@ public class SuperUser extends Activity {
 
     }
 
-//    private void selectSection(final String cls, final String type) {
-//
-//        Log.d(TAG, "selectSection: ");
-//        final String[] array = myapp.getSections(cls);
-//        AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
-//        builder.setTitle("Select a Class");
-//        builder.setCancelable(false);
-//        builder.setSingleChoiceItems(array, -1,new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                String curSection = array[i];
-//                myapp.setSec(curSection);
-//                Log.d(TAG, "onClick: "+curSection);
-//                dialogInterface.dismiss();
-//            }
-//        });
-//
-//        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                dialogInterface.dismiss();
-//            }
-//        });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-
     private void selectTopic(final String[] titles, final String[] topics, final String type) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(SuperUser.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Topic");
         builder.setCancelable(false);
-        builder.setSingleChoiceItems(topics, -1,new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(titles, -1,new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -489,6 +464,7 @@ public class SuperUser extends Activity {
     private void deleteQuiz(String curTopic) {
         Log.d(TAG, "deleteQuiz: ");
         reference.child(myapp.getCls()).child(myapp.getSubject()).child(curTopic).removeValue();
+        toastMessage("Deleted quiz "+curTopic);
     }
 
     private void toastMessage(String s) {

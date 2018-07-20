@@ -21,54 +21,57 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Created by vaibhav on 1/6/18.
- */
+public class EditStudents extends Activity {
+    private static final String TAG = "EditStudents";
 
-public class AddStudents extends Activity {
-    private static final String TAG = "AddStudents";
-
-    private EditText name, age;
+    private EditText etName, etAge;
     private Button gender, next;
     private TextView studentID,txtNumber;
     private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/";
     private String studID,Gen="",cls,Section,school;
-    private int i = 1,NumStudents;
+    private int NumStudents=1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_students_data);
-        Log.d(TAG, "onCreate: created");
+        Log.d(TAG, "onCreate: ");
 
         school    = myapp.getSchool();
+        cls       = myapp.getCls();
+        Section   = myapp.getSec();
+        NumStudents  = 1;
 
         Intent intent = getIntent();
-        cls       = intent.getStringExtra("class");
-        Section   = intent.getStringExtra("section");
-        NumStudents  = intent.getIntExtra("number", 0);
+        studID = intent.getStringExtra("id");
+        String name = intent.getStringExtra("name");
+        String age = intent.getStringExtra("age");
+        Gen = intent.getStringExtra("gender");
 
         Log.d(TAG, "onCreate: "+NumStudents);
 
         //initializing widgets
-        name       = (EditText) findViewById(R.id.etStudName);
-        age        = (EditText) findViewById(R.id.etStudage);
+        etName = (EditText) findViewById(R.id.etStudName);
+        etAge = (EditText) findViewById(R.id.etStudage);
         studentID  = (TextView) findViewById(R.id.txtStudentID);
         txtNumber  = (TextView) findViewById(R.id.txtNumSD);
         gender     = (Button)   findViewById(R.id.etStudgender);
         next       = (Button)   findViewById(R.id.btnNextStud);
         //end
 
-        txtNumber.setText("Student "+i+"/"+NumStudents);
-        studID = school + cls + Section + "001";
+        next.setText("Save");
+        gender.setText("Gender: "+Gen);
+        txtNumber.setText("");
         studentID.setText("ID: " + studID);
+        etAge.setText(age);
+        etName.setText(name);
 
         gender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 final String[] arrayGenders = {"Male","Female","Others"};
-                AlertDialog.Builder builder = new AlertDialog.Builder(AddStudents.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditStudents.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
 
                 builder.setTitle("Choose your gender");
                 builder.setCancelable(false);
@@ -95,21 +98,20 @@ public class AddStudents extends Activity {
         });
 
     }
-
     private void storeData() {
         Log.d(TAG, "storeData: ");
 
         int intAge;
-        String ageS = age.getText().toString();
-        String nameS = name.getText().toString();
+        String ageS = etAge.getText().toString();
+        String nameS = etName.getText().toString();
         if (Gen.length() == 0 || ageS.length() == 0 || nameS.length() == 0) {
-            Toast.makeText(AddStudents.this, "Data incomplete", Toast.LENGTH_SHORT).show();
+            toastMessage("Data incomplete");
             return;
         }
         try {
             intAge = Integer.parseInt(ageS);
         } catch (NumberFormatException e) {
-            Toast.makeText(AddStudents.this, "age must be a number!", Toast.LENGTH_SHORT).show();
+            toastMessage("age must be a number!");
             return;
         }
 
@@ -126,44 +128,44 @@ public class AddStudents extends Activity {
         file = new File(myDir,"Details.txt");
         data = nameS+"\n"+ageS+"\n"+Gen;
         SaveData(file,data);
-
-        updateFeilds();
-    }
-
-    private void updateFeilds() {
-        //updating the counter
-        i++;
-        if (i > NumStudents) {
-            Log.d(TAG, "onClick: Doneeeee");
-
-            toastMessage("Data Stored for class "+cls + Section+" :)");
-            finish();
-        }
-
-        else {
-
-            if (i == NumStudents) {
-                next.setText("Finish");
-                Log.d(TAG, "onClick: finish this!");
-            }
-
-            if (i < 10)
-                studID = school + cls + Section + "00" + i;
-            else if (i < 100)
-                studID = school + cls + Section + "0" + i;
-            else
-                studID = school + cls + Section + i;
-
-            Log.d(TAG, "onClick: " + studID);
-            studentID.setText("ID: " + studID);
-            txtNumber.setText("Student " + i + "/" + NumStudents);
-            Gen = "";
-            age.setText("");
-            name.setText("");
-            Log.d(TAG, "onClick: yay");
-        }
+        finish();
 
     }
+
+//    private void updateFeilds() {
+//        //updating the counter
+//        i++;
+//        if (i > NumStudents) {
+//            Log.d(TAG, "onClick: Doneeeee");
+//
+//            toastMessage("Data Stored for class "+cls + Section+" :)");
+//            finish();
+//        }
+//
+//        else {
+//
+//            if (i == NumStudents) {
+//                next.setText("Finish");
+//                Log.d(TAG, "onClick: finish this!");
+//            }
+//
+//            if (i < 10)
+//                studID = school + cls + Section + "00" + i;
+//            else if (i < 100)
+//                studID = school + cls + Section + "0" + i;
+//            else
+//                studID = school + cls + Section + i;
+//
+//            Log.d(TAG, "onClick: " + studID);
+//            studentID.setText("ID: " + studID);
+//            txtNumber.setText("Student " + i + "/" + NumStudents);
+//            Gen = "";
+//            age.setText("");
+//            etName.setText("");
+//            Log.d(TAG, "onClick: yay");
+//        }
+//
+//    }
 
     private void SaveData(File file, String data) {
         FileOutputStream fos;

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,7 +47,7 @@ public class HomePage extends Activity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
-    private Button btnUpload, btnDownload, btnStartQuiz, btnSignOut, btnComplete,btnViewScores;
+    private Button btnUpload, btnDownload, btnStartQuiz, btnSignOut, btnComplete,btnViewScores,btnViewStudents;
     private Boolean isConnected;
     private String userId,school,teacherName;
     private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/",
@@ -62,8 +63,9 @@ public class HomePage extends Activity {
         btnDownload    = (Button) findViewById(R.id.btnDownloadH);
         btnStartQuiz   = (Button) findViewById(R.id.btnStartQuizH);
         btnSignOut     = (Button) findViewById(R.id.btnSignOut);
-        btnComplete = (Button) findViewById(R.id.btnSyncData);
+        btnComplete    = (Button) findViewById(R.id.btnSyncData);
         btnViewScores  = (Button) findViewById(R.id.btnViewAvgScore);
+        btnViewStudents  = (Button) findViewById(R.id.btnViewStudNames);
 
         school = myapp.getSchool();
 
@@ -92,7 +94,14 @@ public class HomePage extends Activity {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadScores();
+                verifyPratham();
+            }
+        });
+
+        btnViewStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectClass("students");
             }
         });
 
@@ -120,10 +129,8 @@ public class HomePage extends Activity {
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 mAuth.signOut();
-                Intent intent= new Intent(HomePage.this,MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -140,10 +147,12 @@ public class HomePage extends Activity {
         File file = new File(myDir,"BasicData.txt");
         String[] details = readData(file);
         if (details.length==0){
-            setInvisible();
+            toastMessage("!!!Complete the registation first!!!");
             return;
         }
 
+        setBtnVisible();
+        btnComplete.setVisibility(View.VISIBLE);
         school = details[0];
         teacherName = details[1];
         int count = details.length-2;
@@ -186,12 +195,13 @@ public class HomePage extends Activity {
         Log.d(TAG, "selectClass: "+array.length);
 
         if (array.length==0){
-            toastMessage("No classes to show!! You can try 'Download data'");
+            toastMessage("No classes to show!!");
             return;
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this,R.style.Theme_AppCompat_Dialog_Alert);
         builder.setTitle("Select a Class");
+        builder.setCancelable(false);
 
         builder.setSingleChoiceItems(array, -1, new DialogInterface.OnClickListener() {
             @Override
@@ -252,6 +262,11 @@ public class HomePage extends Activity {
                 Log.d(TAG, "onClick: "+curSection);
                 if (type.equals("quiz")){
                     selectSubject("");
+                }
+                else if (type.equals("students")) {
+                    Intent intent = new Intent(HomePage.this,SelectName.class);
+                    intent.putExtra("type",true);
+                    startActivity(intent);
                 }
                 dialogInterface.dismiss();
             }
@@ -404,12 +419,13 @@ public class HomePage extends Activity {
 
     private void uploadStatus(String school,String Cls) {
 
-        Log.d(TAG, "uploadStatus: ");
 
         String dateSt  = new Date().toString();
+        Log.d(TAG, "uploadStatus: "+dateSt.length());
         String date    = dateSt.substring(8,10);
         String month   = dateSt.substring(4,7);
-        String year    = dateSt.substring(30,34);
+        Log.d(TAG, "uploadStatus: "+date+month);
+        int year    = new Date().getYear();
         String dateStr = date + "-" + month + "-" + year;
 
         Log.d(TAG, "uploadStatus: "+dateStr);
@@ -433,6 +449,38 @@ public class HomePage extends Activity {
         uploadStudentScore(tempRef, school, cls, sec, subject);
 
         Log.d(TAG, "uploadScores: " + finalPath);
+    }
+
+    private void verifyPratham(){
+
+        final String key = getResources().getString(R.string.teacherKey);
+
+        final Dialog dialog = new Dialog(HomePage.this);
+        dialog.setContentView(R.layout.dialog_text);
+        dialog.setTitle("You need to be a pratham teacher to upload data");
+
+        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogText);
+        Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
+        et.setEnabled(true);
+        et.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        et.setHint("Enter teacher key");
+        btnDone.setEnabled(true);
+
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String enteredKey = et.getText().toString().trim();
+                if (enteredKey.equals(key)){
+                    uploadScores();
+                }
+                else
+                    toastMessage("Incorrect key!!");
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
     }
 
     private void uploadScores() {
@@ -512,8 +560,9 @@ public class HomePage extends Activity {
 
     private void uploadTeacherScore(DatabaseReference tempRef,String cls, String subject) {
 
-        databaseReference.child("users").child("Name").setValue(teacherName);
-        databaseReference.child("users").child("School").setValue(school);
+        userId = mAuth.getCurrentUser().getUid();
+        databaseReference.child("users").child(userId).child("Name").setValue(teacherName);
+        databaseReference.child("users").child(userId).child("School").setValue(school);
 
         Log.d(TAG, "uploadTeacherScore: ");
         File myDir = new File(pathQ + cls + "/" + subject);

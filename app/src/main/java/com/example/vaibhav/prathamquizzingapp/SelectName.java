@@ -1,6 +1,8 @@
 package com.example.vaibhav.prathamquizzingapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,7 +32,6 @@ public class SelectName extends Activity {
     private static final String TAG = "SelectName";
 
     private ListView listNames;
-    private String childName;
     private final String pathU = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/User/";
 
     @Override
@@ -44,10 +45,12 @@ public class SelectName extends Activity {
         final String School = myapp.getSchool();
         final String title  = myapp.getQuizTitle();
 
-        final ArrayList<String> namesarray = new ArrayList<>();
-        final ArrayList<String> arrayId = new ArrayList<>();
+        final boolean type = getIntent().getBooleanExtra("type",false);
+        final ArrayList<String> namesarray  = new ArrayList<>();
+        final ArrayList<String> genderArray = new ArrayList<>();
+        final ArrayList<String> ageArray    = new ArrayList<>();
+        final ArrayList<String> arrayId     = new ArrayList<>();
         listNames = (ListView) findViewById(R.id.listviewNames);
-        childName = "";
 
         int rollNo = 1;String id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
 
@@ -64,6 +67,10 @@ public class SelectName extends Activity {
             }
             namesarray.add(names[0]);
             arrayId.add(id);
+            if (type){
+                ageArray.add(names[1]);
+                genderArray.add(names[2]);
+            }
             rollNo++;
             id = School + cls + sec + (rollNo < 10 ? "00" : "0") + rollNo;
 
@@ -77,14 +84,64 @@ public class SelectName extends Activity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    childName = namesarray.get(i);
-                    Intent intent = new Intent(SelectName.this, QuizActivity.class);
-                    intent.putExtra("childId",arrayId.get(i));
-                    intent.putExtra("user",true);
-                    startActivity(intent);
-                    finish();
+                    if (type){
+                        viewDetails(arrayId.get(i), genderArray.get(i), namesarray.get(i), ageArray.get(i));
+                    }
+                    else {
+                        Intent intent = new Intent(SelectName.this, QuizActivity.class);
+                        intent.putExtra("childId", arrayId.get(i));
+                        intent.putExtra("user", true);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
         });
+    }
+
+    private void viewDetails(final String id, final String gen, final String name, final String age) {
+        Log.d(TAG, "viewDetails: ");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(SelectName.this);
+        builder.setTitle(id);
+
+        builder.setMessage("Name : "+name+"\n"+
+                           "Gender : "+gen+"\n" +
+                           "Age : "+age+"\n");
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("View Scores", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(SelectName.this,showStudents.class);
+                intent.putExtra("teacher",true);
+                intent.putExtra("id",id);
+                startActivity(intent);
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(SelectName.this,EditStudents.class);
+                intent.putExtra("id",id);
+                intent.putExtra("name",name);
+                intent.putExtra("gender",gen);
+                intent.putExtra("age",age);
+                startActivity(intent);
+                dialogInterface.dismiss();
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void toastMessage(String s) {

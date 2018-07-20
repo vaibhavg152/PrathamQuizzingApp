@@ -28,8 +28,9 @@ public class showStudents extends Activity {
     private static final String TAG = "showStudents";
 
     private DatabaseReference reference;
-    private ArrayList<String> students,avgScores,scores,topics;
+    private ArrayList<String> students,avgScores,scores,topics,users;
     private ListView listNames;
+    private String cls,school,section;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,10 +38,11 @@ public class showStudents extends Activity {
         Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_select_name);
 
-        final String cls     = myapp.getCls();
-        final String school  = myapp.getSchool();
-        final String section = myapp.getSec();
-
+        cls      = myapp.getCls();
+        school   = myapp.getSchool();
+        section  = myapp.getSec();
+        final boolean teacher = getIntent().getBooleanExtra("teacher",false);
+        final String stID=( teacher? getIntent().getStringExtra("id") : "");
         Log.d(TAG, "onCreate: "+cls+school+section);
 
         listNames = (ListView) findViewById(R.id.listviewNames);
@@ -50,6 +52,7 @@ public class showStudents extends Activity {
         avgScores = new ArrayList<>();
         topics    = new ArrayList<>();
         students  = new ArrayList<>();
+        users     = new ArrayList<>();
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -61,6 +64,7 @@ public class showStudents extends Activity {
                     if (!(user.child("School").getValue(String.class).equals(school))) {
                         continue;
                     }
+                    users.add(user.getKey());
 
                     Log.d(TAG, "onDataChange: "+user.getKey());
                     if (!user.child("Classes").hasChild(cls)) {
@@ -73,38 +77,24 @@ public class showStudents extends Activity {
                         continue;
                     }
 
-//                    if (user.hasChild("Name")){
-                    String teacherName = user.child("Name").getValue(String.class);
-
                     for (DataSnapshot student:user.child("Classes").child(cls).child(section).getChildren()){
 
+
                         if (student.hasChild("Name")) {
+
                             String name = student.child("Name").getValue(String.class);
                             Log.d(TAG, "onDataChange: "+name);
                             students.add(name);
-                        }
 
-                        if (student.hasChild("Scores")){
-                            for (DataSnapshot aSubject:student.child("Scores").getChildren()){
-                                String subject = aSubject.getKey();
-                                Log.d(TAG, "onDataChange: "+subject);
-
-                                for (DataSnapshot aTopic:aSubject.getChildren()){
-                                    String topic = aTopic.getKey();
-                                    topics.add(subject+": "+topic);
-                                    Log.d(TAG, "onDataChange: "+topic);
-
-                                    String score = aTopic.child("%Score").getValue(String.class) + "%";
-                                    scores.add(score);
-                                    Log.d(TAG, "onDataChange: "+score);
-
-                                    String avgScore = "("+teacherName + ") " + user.child("Scores").child(cls).child(subject).child(topic)
-                                            .child("averageScore").getValue(long.class) + "%";
-                                    avgScores.add(avgScore);
-                                    Log.d(TAG, "onDataChange: "+avgScore);
+                            if (teacher){
+                                if (student.getKey().equals(stID)) {
+                                    viewScores(name);
+                                    finish();
                                 }
+                                else continue;
                             }
                         }
+
                         else Log.d(TAG, "onDataChange: not found");
                     }
                 }
@@ -123,8 +113,69 @@ public class showStudents extends Activity {
         listNames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                viewScores(students.get(position));
+            }
+        });
+    }
 
-                String name = students.get(position);
+    private void viewScores(final String name) {
+        Log.d(TAG, "viewScores: ");
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.d(TAG, "onDataChange: ");
+                for (String userStr:users){
+
+                    Log.d(TAG, "onDataChange: "+userStr);
+                    DataSnapshot user = dataSnapshot.child(userStr);
+
+                    String teacherName = user.child("Name").getValue(String.class);
+
+                    Log.d(TAG, "onDataChange: "+teacherName);
+                    for (DataSnapshot student:user.child("Classes").child(cls).child(section).getChildren()) {
+
+                        Log.d(TAG, "onDataChange: "+name);
+//                        if (!student.child("Name").equals(name))
+//                            continue;
+//
+                        if (student.hasChild("Scores")) {
+                            Log.d(TAG, "onDataChange: ");
+
+                            for (DataSnapshot aSubject : student.child("Scores").getChildren()) {
+                                String subject = aSubject.getKey();
+                                Log.d(TAG, "onDataChange: " + subject);
+
+                                for (DataSnapshot aTopic : aSubject.getChildren()) {
+                                    String topic = aTopic.getKey();
+                                    topics.add(subject + ": " + topic);
+                                    Log.d(TAG, "onDataChange: " + topic);
+
+                                    String score = aTopic.child("%Score").getValue(String.class) + "%";
+                                    scores.add(score);
+                                    Log.d(TAG, "onDataChange: " + score);
+
+                                    try {
+                                        String avgScore = "(" + teacherName + ") " + user.child("Scores").child(cls).child(subject).child(topic)
+                                                .child("averageScore").getValue(long.class) + "%";
+                                        avgScores.add(avgScore);
+
+                                        Log.d(TAG, "onDataChange: " + avgScore);
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                        String avgScore = "(" + teacherName + ") " + user.child("Scores").child(cls).child(subject).child(topic)
+                                                .child("averageScore").getValue(String.class) + "%";
+                                        avgScores.add(avgScore);
+
+                                        Log.d(TAG, "onDataChange: " + avgScore);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
                 int count = avgScores.size();
                 String[] scor = new String[count];
                 String[] avgs = new String[count];
@@ -140,8 +191,15 @@ public class showStudents extends Activity {
                 intent.putExtra("avgScores",avgs);
                 intent.putExtra("name",name);
                 startActivity(intent);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+
     }
 
     private void toastMessage(String s) {

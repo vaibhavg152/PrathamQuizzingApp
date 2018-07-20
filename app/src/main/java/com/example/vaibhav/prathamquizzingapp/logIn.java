@@ -49,7 +49,8 @@ public class logIn extends Activity {
         btnRegister = (Button)   findViewById(R.id.btnRegister);
         btnRegister.setVisibility(View.VISIBLE);
 
-        final Boolean admin = getIntent().getBooleanExtra("user",false);
+        final Boolean admin   = getIntent().getBooleanExtra("user",false);
+        final String  adminId = getResources().getString(R.string.adminID);
         if (admin) btnRegister.setVisibility(View.INVISIBLE);
         auth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -62,12 +63,12 @@ public class logIn extends Activity {
 
                     Log.d(TAG, "onAuthStateChanged: "+admin);
                     if (admin){
-                       if (user.getUid().equals("aofrJyc112hbmnQxYbzY8JoZ7yW2")
-                               ||myapp.getUserId().equals("lW1eDbqaEzPLuJqIWJ0cbxTgcbz2")){
+                       if (user.getUid().equals(adminId)){
 
                            Log.d(TAG, "onAuthStateChanged: vrtified");
                            Intent intent = new Intent(logIn.this,SuperUser.class);
                            startActivity(intent);
+                           finish();
                        }
                        else {
                            toastMessage("User is not an admin");
@@ -78,6 +79,7 @@ public class logIn extends Activity {
 
                         Intent intent = new Intent(logIn.this, HomePage.class);
                         startActivity(intent);
+                        finish();
                     }
                 }
                 else toastMessage("signed out");
@@ -124,6 +126,7 @@ public class logIn extends Activity {
 
                 Intent intent = new Intent(logIn.this,RegisterEmail.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -134,11 +137,12 @@ public class logIn extends Activity {
         final Dialog dialog = new Dialog(logIn.this);
         dialog.setContentView(R.layout.dialog_text);
 
-        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogNumber);
+        final EditText et  = (EditText) dialog.findViewById(R.id.etDialogText);
         Button btnDone     = (Button)   dialog.findViewById(R.id.btnDialogNumber);
         et.setEnabled(true);
         et.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         btnDone.setEnabled(true);
+        et.setHint("New password will be sent to this email");
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -72,7 +72,7 @@ public class QuizActivity extends Activity {
 
         animation   = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.sample_animation);
         userId = myapp.getUserId();
-        mediaPlayer = MediaPlayer.create(this,R.raw.song);
+        mediaPlayer = MediaPlayer.create(this,R.raw.positive);
         audioPlayer = new MediaPlayer();
         audioPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -211,6 +211,8 @@ public class QuizActivity extends Activity {
             option_D[i]   = readQues[4];
             hasAudio[i]   = readQues[6].equals("true");
             hasImage[i]   = readQues[7].equals("true");
+            Log.d(TAG, "getAlltheQuestions: "+hasImage[i]);
+            Log.d(TAG, "getAlltheQuestions: "+hasAudio[i]);
 
             Log.d(TAG, "getAlltheQuestions: "+readQues[5]);
             if (readQues[5].equals("A"))
@@ -316,6 +318,7 @@ public class QuizActivity extends Activity {
             return;
         }
 
+        btnPlay.setEnabled(true);
         Log.d(TAG, "playAudio: "+downloads);
 
         try {
@@ -335,7 +338,7 @@ public class QuizActivity extends Activity {
 
         try {
 
-            String photoPath = pathQ + quizClass + "/" + subject + "/" + title + "/Q" + q_no + "/image.jpeg";
+            String photoPath = pathQ + quizClass + "/" + subject + "/" + title + "/Q" + q_no + "/image.jpg";
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -346,7 +349,11 @@ public class QuizActivity extends Activity {
         }catch (Exception e){
             toastMessage("Error loading image");
             e.printStackTrace();
+            imageView.setImageResource(R.drawable.logo);
         }
+
+//        imageView.setImageResource(R.drawable.logo);
+
     }
 
     private void choseAns() {
@@ -404,6 +411,8 @@ public class QuizActivity extends Activity {
         Log.d(TAG, "updateQues: ");
 
         mediaPlayer.stop();
+        audioPlayer.stop();
+        audioPlayer.reset();
 
         q_no++;
         btnPlay.setVisibility(View.INVISIBLE);

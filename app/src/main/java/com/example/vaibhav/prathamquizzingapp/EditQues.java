@@ -151,7 +151,7 @@ public class EditQues extends Activity {
                     return;
                 }else storeData(Ques,optA,optB,optC,optD,answer, reference);
 
-                goBack();
+                finish();
             }
         });
         //end
@@ -280,15 +280,6 @@ public class EditQues extends Activity {
         imageIntent.setType("image/*");
         imageIntent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(imageIntent,REQUEST_CODE);
-    }
-
-    private void goBack() {
-        toastMessage("Updating data. :)");
-
-        Intent intent1 = new Intent(EditQues.this,EditQuiz.class);
-        intent1.putExtra("class",cls);
-        intent1.putExtra("topic",quizNo);
-        startActivity(intent1);
     }
 
     private String getExtension(Uri uri){

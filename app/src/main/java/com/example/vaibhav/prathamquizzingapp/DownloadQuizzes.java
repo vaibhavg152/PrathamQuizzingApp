@@ -1,13 +1,14 @@
 package com.example.vaibhav.prathamquizzingapp;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +26,6 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,6 +42,7 @@ public class DownloadQuizzes extends Activity {
     private DatabaseReference databaseReference;
     private StorageReference  storageReference;
     private ProgressBar pbImage,pbAudio;
+    private Uri uriImage;
     private TextView tvDetails;
     private final String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/Pratham/Quizzes/";
 
@@ -73,7 +73,6 @@ public class DownloadQuizzes extends Activity {
                         final String title = aTopic.child("Title").getValue(String.class);
                         topics += title + "\n";
 
-                        tvDetails.setText(subject +" "+ title);
                         for (DataSnapshot aQues : aTopic.child("Questions").getChildren()) {
 
                             final String Qno = aQues.getKey();
@@ -84,12 +83,15 @@ public class DownloadQuizzes extends Activity {
 
                             pbAudio.setProgress(0);
                             pbImage.setProgress(0);
-                            if (aQues.hasChild("Audio"))
-                                downloadAudios(title,Qno,location,subject);
+                            if (aQues.hasChild("Audio")) {
+                                final String urlAudio  = aQues.child("Image").getValue(String.class);
+                                downloadAudios(title, Qno, location, subject);
+                            }
 
                             if (aQues.hasChild("Image")) {
                                 final String urlImage  = aQues.child("Image").getValue(String.class);
-                                downloadImages(urlImage, location);
+                                uriImage = Uri.parse(urlImage);
+                                downloadImages(location,Qno,subject,title, urlImage);
                             }
                         }
                     }
@@ -110,7 +112,7 @@ public class DownloadQuizzes extends Activity {
 
     }
 
-    private void downloadAudios(final String title, final String Qno, final String location, String subject) {
+    private void downloadAudios(final String title, final String Qno, final String location, final String subject) {
 
         Log.d(TAG, "downloadAudios: ");
 
@@ -136,6 +138,7 @@ public class DownloadQuizzes extends Activity {
         }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                tvDetails.setText(subject +" "+ title);
 
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 pbAudio.setProgress(((int) progress));
@@ -167,47 +170,46 @@ public class DownloadQuizzes extends Activity {
         SaveData(file,data);
     }
 
-    private void downloadImages(String value, final String finalpath) {
+    private void downloadImages(final String finalpath, String Qno, String subject, String title, String url) {
 
         Log.d(TAG, "downloadImage: ");
 
-        Picasso.with(DownloadQuizzes.this).load(value)
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        try{
+        String ext = getFileExtension(uriImage);
+        final String imagePath = "images/" + myapp.getCls() + "/" + subject + "/" + title + Qno + "."+ext;
+        StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(url);
+        Log.d(TAG, "downloadImages: "+imagePath);
 
-                            File myDir = new File(finalpath);
+        File myDir = new File(finalpath);
+        if (!myDir.exists()) myDir.mkdirs();
+        File file = new File(myDir,"image.jpg");
 
-                            if (!myDir.exists()) myDir.mkdirs();
+        ref.getFile(file).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                Log.d(TAG, "onComplete: image"+imagePath);
 
-                            myDir = new File(myDir, "image.jpeg");
-                            FileOutputStream out = new FileOutputStream(myDir);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-
-                            pbImage.setProgress(100);
-                            out.flush();
-                            out.close();
-
-                        }catch (Exception e){
-                            Log.d(TAG, "onBitmapLoaded: "+e.getMessage());
-                        }
-                        Log.d(TAG, "onBitmapLoaded: ");
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        Log.d(TAG, "onBitmapFailed: Failed :(");
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        Log.d(TAG, "onPrepareLoad: ");
-                    }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: failed image"+imagePath);
+                e.printStackTrace();
+            }
+        }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                pbImage.setProgress(((int) progress));
+            }
+        });
 
 
-                })
-        ;
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(cR.getType(uri));
     }
 
     private void SaveData(File file, String data) {
